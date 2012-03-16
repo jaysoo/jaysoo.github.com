@@ -1,0 +1,455 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		
+		<title>Building Large JavaSript Applications With Backbone.js</title>
+
+		<meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
+		<meta name="author" content="Hakim El Hattab">
+		
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+		
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+
+    <style>
+      dl {
+        text-align: left;
+      }
+      dt {
+        font-weight: bold;
+      }
+      dd {
+        margin-left: 40px;
+      }
+      img.full-image {
+        width: 100%;
+      }
+      pre code {
+        font-size: 16px;
+        line-height: 22px;
+      }
+      pre.code-large code {
+        font-size: 24px;
+        line-height: 32px;
+      }
+    </style>
+	</head>
+	
+	<body>
+		
+		<div id="reveal">
+			
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+          <h1>Backbone.js</h1>
+          <h3 class="inverted">Building Large-Scale JavaScript Applications</h3>
+					<script>
+						// Delicously hacky. Look away.
+						if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+						document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+					</script>
+				</section>
+
+        <section>
+          <h2>Agenda</h2>
+          <ul>
+            <li>State of JavaScript development</li>
+            <li>Look at some <strong>design patterns</strong></li>
+            <li>Backbone.js</li>
+            <li>Code testing</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>But first...</h3>
+        </section>
+
+        <section>
+          <h3>Pop Quiz!</h3>
+          <p>What are the results of these snippets?</p>
+          <pre><code contenteditable>[] + ''</code></pre>
+          <pre><code contenteditable>{} + ''</code></pre>
+          <pre><code contenteditable>{} + []</code></pre>
+          <pre><code contenteditable>[] + {}</code></pre>
+          <pre><code contenteditable>[] + []</code></pre>
+          <pre><code contenteditable>{} + {}</code></pre>
+        </section>
+      
+				<section>
+					<h3>Okay, let's talk jQuery</h3>
+          <ul>
+            <li>jQuery is ubiquitous in JavaScript development...</li>
+            <li>Excellent for DOM manupilation and cross-browser support</li>
+            <li class="fragment">But, it's only one small piece of a large puzzle</li>
+            <li class="fragment">If you build your entire application using only jQuery there will be problems</li>
+            <li class="fragment">Don't believe me?</li>
+          </ul>
+				</section>
+
+        <section>
+          <section>
+            <h3>Spaghetti code</h3>
+            <p>How often do you end up with something like this?</p>
+            <pre><code contenteditable>var $content = $('#content');
+$.ajax({
+  url: '/api/people/',
+  success: function(people) {
+    var $ul = $('&lt;ul/&gt;');
+    for (var i = 0; i &lt; people.length; i++) {
+      var person = people[i];
+      $ul.append(
+        '&lt;li&gt;' + person + '&lt;/li&gt;'
+      );
+    }
+    $content.append($ul);
+  }
+});</code></pre>
+
+            <p class="fragment">Okay, that's not so bad</p>
+          </section>
+
+          <section>
+            <p>How about this?</p>
+            <pre><code contenteditable>var $content = $('#content');
+
+// Load one person
+$.ajax({
+  url: '/api/people/jack',
+  success: function(me) {
+    var $friends = $('&lt;ul class="friends"/&gt;).appendTo($content);
+
+    // Display some info for me
+    $content.append(
+      '&lt;p&gt;' + me.name + ' has ' + me.friends.length + ' friends&lt;/p&gt;'
+    );
+
+    // Load all my friends
+    for (var i = 0; i &lt; me.friends; i++) {
+      $.ajax({
+        url: '/api/people/' + friend,
+        success: function(friend) {
+          // Display info for friends
+          $friends.append('&lt;li&gt;' + friend.name + '&lt;/li&gt;);
+        }
+      });
+    }
+  }
+});</code></pre>
+          </section>
+
+        </section>
+				
+				<section>
+          <h3>jQuery-only does not scale <s>well</s> easily</h3>
+          <ul>
+            <li>No separation of concerns between data and presentation</li>
+            <li>No separation between data and their source (e.g. AJAX)</li>
+            <li>Events and callbacks can become unmanageable</li>
+          </ul>
+				</section>
+
+        <section>
+          <h3>Other problems with JavaScript</h3>
+          <ul>
+            <li>Client-side JavaScript has no built-in module support</li>
+            <li>OOP in pure JavaScript is not easy</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Addressing the problems</h3>
+          <p>Some patterns that will help</p>
+          <ul>
+            <li>Namespacing pattern</li>
+            <li>Module pattern</li>
+            <li>MVC and MV* patterns</li>
+          </ul>
+        </section>
+
+        <section>
+          <section>
+            <h3>Namespacing</h3>
+            <p>In JavaScript, hash objects are used for namespacing</p>
+            <pre><code contenteditable>var foo = {
+    bar: {
+      faz: {
+        baz: {}
+    }
+  };
+
+  foo.bar.faz.baz.MyModel = function() {};</code></pre>
+            <p class="fragment">Very ugly</p>
+          </section>
+
+          <section>
+            <h3>Better way to do namespacing</h3>
+            <pre><code contenteditable>function namespace(ns, obj) {
+    var ns = ns.split('.'), 
+      p = window,
+      i, k;
+    for(i=0; i&lt;ns.length; i++) 
+      p = p[ns[i]] = p[ns[i]] || {};
+    if (obj) {
+      obj = obj instanceof Function ? obj(p) : obj;
+      for (k in obj) {
+        if (obj.hasOwnProperty(k))
+          p[k] = obj[k];
+      }
+    }
+  }</code></pre>
+            <p class="fragment">Now we can use the namespace function</p>
+            <pre class="fragment"><code contenteditable>namespace('foo.bar.faz.baz', function(Baz) {
+    Baz.MyModel = function() {};
+  });</code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h3>Module loading</h3>
+          <p>Two options:</p>
+          <ol>
+            <li>Roll your own module system</li>
+            <li>Use an AMD framework such as <a href="http://requirejs.org/">RequireJS</a></li>
+          </ol>
+        </section>
+
+        <section>
+          <section>
+            <h3>A simple module system</h3>
+            <pre class="code-large"><code contenteditable>var module = (function() {
+    var modules = {};
+    return function(name) {
+      if (name in modules)
+        return modules[name];
+      return ( modules[name] = {} );
+    };
+  })();</code></pre>
+          </section>
+
+          <section>
+            <h3>Defining a module</h3>
+            <pre class="code-large"><code contenteditable>(function(Foo) {
+    Foo.BarModel = function() {
+      this.message = 'Hello World!';
+    };
+  })( module('foo') );</code></pre>
+          </section>
+
+          <section>
+            <h3>Loading a module</h3>
+            <pre class="code-large"><code contenteditable>(function(Foo) {
+    var bar = new Foo.BarModel();
+  })( module('foo') );</code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h3>Combining module and namespacing</h3>
+          <p>Add namespacing support for module function</p>
+          <pre class="code-large"><code contenteditable>// Add namespacing support for module()
+function module(ns) {
+  var ns = ns.split('.'), 
+    p = window,
+    i, k;
+  for(i=0; i&lt;ns.length; i++) 
+    p = p[ns[i]] = p[ns[i]] || {};
+  return p;
+}                    
+
+// Defining a namespaced module
+(function(Baz) {
+  Baz.MyModel = function() {};
+})( module('foo.bar.faz.baz') );</code></pre>
+        </section>
+
+      <section>
+          <section>
+            <h3>The MVC Pattern</h3>
+            <ul>
+              <li>MVC is the most common structural pattern for the web</li>
+              <li>Many MVC frameworks out there:</li>
+              <li class="fragment">Ruby On Rails (Ruby)</li>
+              <li class="fragment">Django (Python)</li>
+              <li class="fragment">Spring MVC (Java)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Overview of MVC</h3>
+            <img class="full-image" src="img/mvc.png">
+          </section>
+
+          <section>
+            <h3>Model, View, Controller</h3>
+            <dl>
+              <dt>Model<dt>
+              <dd>Manages data</dd>
+              <dt>View</dt>
+              <dd>Renders the model into a form suitable for interaction (UI)</dd>
+              <dt>Controller</dt>
+              <dd>Receives user inputs and performs actions on model accordingly</dd>
+            </dl>
+          </section>
+
+          <section>
+            <h3>MV* Patterns</h3>
+            <ul>
+              <li>Many frameworks are not strict MVC, but a different flavour of it</li>
+              <li class="fragment">MVP: Replaces Controller with Presenter, and further separates Model from View</li>
+              <li class="fragment">MVVM: Replaces Controller with View-Model -- an abstraction of the View that provides data binding between Model and View</li>
+              <li class="fragment">MV* is used to describe these flavours of MVC</li>
+          </ul>
+          </section>
+        </section>
+
+        <section>
+          <h2>Part 2</h2>
+          <h3 class="inverted">Backbone.js</h3>
+        </section>
+
+        <section>
+          <section>
+            <h3>Overview of Backbone.js</h3>
+            <ul>
+              <li>Very lightweight</li>
+              <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
+              <li>Uses MV* pattern</li>
+              <li>Very close to Smalltalk-80's MVC pattern</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Smalltalk-80 MVC</h3>
+            <ul>
+              <li>Model is completely ignorant of the UI</li>
+              <li>A View-Controller pair required presentation</li>
+              <li>Controller handles user interaction and performing actions based on them</li>
+              <li>Observer pattern used for update the View whenever the Model changes</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h3>MV* in Backbone.js</h3>
+          <dl>
+            <dt>Model</dt>
+            <dd>Same as model in MVC</dd>
+            <dt>Template<dt>
+            <dd>Same as view in MVC</dd>
+            <dt>View</dt>
+            <dd>Similar to Controller in Smalltalk-80's MVC</dd>
+            <dd>Takes in model and renders view</dd>
+            <dd>Handles user interaction with view to update model</dd>
+            <dd>Observes changes on model to update view</dd>
+          </dl>
+        </section>
+
+        <section>
+          <section>
+            <h3>OOP using Backbone.js</h3>
+            <p>Provides function to properly setup prototypical inhertiance</p>
+            <pre class="code-large"><code contenteditable>var Animal = Backbone.Model.extend({
+  says: function() { return '?'; }
+});
+
+var Cat = Animal.extend({
+  says: function() { return 'meow'; }
+});
+
+var cat = new Cat();
+cat instanceof Cat; //--&gt; true
+cat instanceof Animal; //--&gt; true
+cat.says(); //--&gt; "meow"
+
+cat.constructor.__super__.says.call(this); //--&gt; '?'</code></pre>
+          </section>
+
+          <section>
+            <h3>Inheritance in pure JavaScript</h3>
+            <pre class="code-large"><code contenteditable>var Animal = function() {};
+Animal.prototype.says = function() { return '?'; };
+
+var Cat = function() {};
+Cat.prototype = new Animal();
+Cat.prototype.constructor = Cat;
+Cat.prototype.says = function() { return 'meow'; };
+
+var cat = new Cat();
+cat instanceof Cat; //--&gt; true
+cat instanceof Animal; //--&gt; true
+cat.says(); //--&gt; "meow"
+
+Animal.prototype.says.call(cat); //--&gt; '?'</code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h3>Code reuse using mixins</h3>
+          <p>A mixin defined attributes and functions that can be shared across differetn classes.</p>
+          <pre class="code-large"><code contenteditable>var Mixins = {};
+
+Mixins.Navigation = {
+  open: function() { /* ... */ },
+  close: function() { /* ... */ },
+  toggle: function() { /* ... */ }
+};
+
+var Menu = Backbone.View.extend({ /* ... */ });
+_.extend(Menu.prototype, Mixins.Navigation);
+
+var menu = new Menu();
+menu.toggle();</code></pre>
+        </section>
+
+        <section>
+          <h3>Let's build an application!</h3>
+          <p>We will build a TODO app</p>
+        </section>
+				
+				<section>
+					<h1>THE END</h1>
+					<h3 class="inverted">BY Jack Hsu/ jaysoo.ca</h3>
+				</section>
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+			</aside>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+			
+		</div>
+		
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script>
+			var query = {};
+			location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+				query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+			} );
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				mouseWheel: true,
+				rollingLinks: true,
+				theme: 'default',
+				transition: 'default'
+			});
+
+			hljs.initHighlightingOnLoad();
+		</script>
+
+	</body>
+</html>
