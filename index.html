@@ -190,23 +190,23 @@ $.ajax({
           <section>
             <h3>Better way to do namespacing</h3>
             <pre><code contenteditable>function namespace(ns, obj) {
-    var ns = ns.split('.'), 
-      p = window,
-      i, k;
-    for(i=0; i&lt;ns.length; i++) 
-      p = p[ns[i]] = p[ns[i]] || {};
-    if (obj) {
-      obj = obj instanceof Function ? obj(p) : obj;
-      for (k in obj) {
-        if (obj.hasOwnProperty(k))
-          p[k] = obj[k];
-      }
+  var ns = ns.split('.'), 
+    p = window,
+    i, k;
+  for(i=0; i&lt;ns.length; i++) 
+    p = p[ns[i]] = p[ns[i]] || {};
+  if (obj) {
+    obj = obj instanceof Function ? obj(p) : obj;
+    for (k in obj) {
+      if (obj.hasOwnProperty(k))
+        p[k] = obj[k];
     }
-  }</code></pre>
+  }
+}</code></pre>
             <p class="fragment">Now we can use the namespace function</p>
             <pre class="fragment"><code contenteditable>namespace('foo.bar.faz.baz', function(Baz) {
-    Baz.MyModel = function() {};
-  });</code></pre>
+  Baz.MyModel = function() {};
+});</code></pre>
           </section>
         </section>
 
@@ -223,29 +223,30 @@ $.ajax({
           <section>
             <h3>A simple module system</h3>
             <pre class="code-large"><code contenteditable>var module = (function() {
-    var modules = {};
-    return function(name) {
-      if (name in modules)
-        return modules[name];
-      return ( modules[name] = {} );
-    };
-  })();</code></pre>
+  var modules = {};
+  return function(name) {
+    if (name in modules)
+      return modules[name];
+    return ( modules[name] = {} );
+  };
+})();</code></pre>
           </section>
 
           <section>
             <h3>Defining a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
-    Foo.BarModel = function() {
-      this.message = 'Hello World!';
-    };
-  })( module('foo') );</code></pre>
+  Foo.BarModel = function() {
+    this.message = 'Hello World!';
+  };
+})( module('foo') );</code></pre>
           </section>
 
           <section>
             <h3>Loading a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
-    var bar = new Foo.BarModel();
-  })( module('foo') );</code></pre>
+  var bar = new Foo.BarModel();
+	alert( bar.message ); //--> 'Hello World!'
+})( module('foo') );</code></pre>
           </section>
         </section>
 
