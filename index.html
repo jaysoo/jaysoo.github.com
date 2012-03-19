@@ -1,20 +1,20 @@
 <!doctype html>  
 <html lang="en">
-	
-	<head>
-		<meta charset="utf-8">
-		
-		<title>Building Large JavaSript Applications With Backbone.js</title>
+  
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Building Large JavaSript Applications With Backbone.js</title>
 
-		<meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
-		<meta name="author" content="Hakim El Hattab">
-		
-		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-		
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="stylesheet" href="css/main.css">
+    <meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
+    <meta name="author" content="Hakim El Hattab">
+    
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/main.css">
 
-		<link rel="stylesheet" href="lib/zenburn.css">
+    <link rel="stylesheet" href="lib/zenburn.css">
 
     <style>
       dl {
@@ -38,51 +38,36 @@
         line-height: 32px;
       }
     </style>
-	</head>
-	
-	<body>
-		
-		<div id="reveal">
-			
-			<!-- Any section element inside of this container is displayed as a slide -->
-			<div class="slides">
-				<section>
+  </head>
+  
+  <body>
+    
+    <div id="reveal">
+      
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
           <h1>Backbone.js</h1>
           <h3 class="inverted">Building Large-Scale JavaScript Applications</h3>
-					<script>
-						// Delicously hacky. Look away.
-						if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
-						document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
-					</script>
-				</section>
+          <script>
+            // Delicously hacky. Look away.
+            if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+            document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+          </script>
+        </section>
 
         <section>
           <h2>Agenda</h2>
           <ul>
-            <li>State of JavaScript development</li>
-            <li>Look at some <strong>design patterns</strong></li>
+            <li>Motivation</li>
+            <li>Design patterns</li>
             <li>Backbone.js</li>
             <li>Code testing</li>
           </ul>
         </section>
-
-        <section>
-          <h3>But first...</h3>
-        </section>
-
-        <section>
-          <h3>Pop Quiz!</h3>
-          <p>What are the results of these snippets?</p>
-          <pre><code contenteditable>[] + ''</code></pre>
-          <pre><code contenteditable>{} + ''</code></pre>
-          <pre><code contenteditable>{} + []</code></pre>
-          <pre><code contenteditable>[] + {}</code></pre>
-          <pre><code contenteditable>[] + []</code></pre>
-          <pre><code contenteditable>{} + {}</code></pre>
-        </section>
       
-				<section>
-					<h3>Okay, let's talk jQuery</h3>
+        <section>
+          <h3>Let's about talk jQuery</h3>
           <ul>
             <li>jQuery is ubiquitous in JavaScript development...</li>
             <li>Excellent for DOM manupilation and cross-browser support</li>
@@ -90,7 +75,7 @@
             <li class="fragment">If you build your entire application using only jQuery there will be problems</li>
             <li class="fragment">Don't believe me?</li>
           </ul>
-				</section>
+        </section>
 
         <section>
           <section>
@@ -144,15 +129,15 @@ $.ajax({
           </section>
 
         </section>
-				
-				<section>
+        
+        <section>
           <h3>jQuery-only does not scale <s>well</s> easily</h3>
           <ul>
             <li>No separation of concerns between data and presentation</li>
             <li>No separation between data and their source (e.g. AJAX)</li>
             <li>Events and callbacks can become unmanageable</li>
           </ul>
-				</section>
+        </section>
 
         <section>
           <h3>Other problems with JavaScript</h3>
@@ -245,7 +230,7 @@ $.ajax({
             <h3>Loading a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
   var bar = new Foo.BarModel();
-	alert( bar.message ); //--> 'Hello World!'
+  alert( bar.message ); //--> 'Hello World!'
 })( module('foo') );</code></pre>
           </section>
         </section>
@@ -379,6 +364,7 @@ Animal.prototype.says = function() { return '?'; };
 var Cat = function() {};
 Cat.prototype = new Animal();
 Cat.prototype.constructor = Cat;
+Cat.prototype.constructor.__super__ = Animal.prototype;
 Cat.prototype.says = function() { return 'meow'; };
 
 var cat = new Cat();
@@ -386,7 +372,7 @@ cat instanceof Cat; //--&gt; true
 cat instanceof Animal; //--&gt; true
 cat.says(); //--&gt; "meow"
 
-Animal.prototype.says.call(cat); //--&gt; '?'</code></pre>
+cat.constructor.__super__.says.call(cat); //--&gt; '?'</code></pre>
           </section>
         </section>
 
@@ -409,48 +395,46 @@ menu.toggle();</code></pre>
         </section>
 
         <section>
-          <h3>Let's build an application!</h3>
-          <p>We will build a TODO app</p>
         </section>
-				
-				<section>
-					<h1>THE END</h1>
-					<p class="inverted">BY Jack Hsu/ jaysoo.ca</p>
-				</section>
-			</div>
+        
+        <section>
+          <h1>THE END</h1>
+          <p class="inverted">by Jack Hsu/ jaysoo.ca</p>
+        </section>
+      </div>
 
-			<!-- The navigational controls UI -->
-			<aside class="controls">
-				<a class="left" href="#">&#x25C4;</a>
-				<a class="right" href="#">&#x25BA;</a>
-				<a class="up" href="#">&#x25B2;</a>
-				<a class="down" href="#">&#x25BC;</a>
-			</aside>
+      <!-- The navigational controls UI -->
+      <aside class="controls">
+        <a class="left" href="#">&#x25C4;</a>
+        <a class="right" href="#">&#x25BA;</a>
+        <a class="up" href="#">&#x25B2;</a>
+        <a class="down" href="#">&#x25BC;</a>
+      </aside>
 
-			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
-			<div class="progress"><span></span></div>
-			
-		</div>
-		
-		<script src="js/reveal.js"></script>
-		<script src="lib/highlight.js"></script>
-		<script>
-			var query = {};
-			location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
-				query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
-			} );
-			Reveal.initialize({
-				controls: true,
-				progress: true,
-				history: true,
-				mouseWheel: true,
-				rollingLinks: true,
-				theme: 'default',
-				transition: 'default'
-			});
+      <!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+      <div class="progress"><span></span></div>
+      
+    </div>
+    
+    <script src="js/reveal.js"></script>
+    <script src="lib/highlight.js"></script>
+    <script>
+      var query = {};
+      location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+        query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+      } );
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        mouseWheel: true,
+        rollingLinks: true,
+        theme: 'default',
+        transition: 'default'
+      });
 
-			hljs.initHighlightingOnLoad();
-		</script>
+      hljs.initHighlightingOnLoad();
+    </script>
 
-	</body>
+  </body>
 </html>
