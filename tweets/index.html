@@ -35,6 +35,16 @@
   <script src="js/lib/backbone.js"></script>
   <script src="js/lib/backbone-localstorage.js"></script>
 
-  <script src="js/app.js"></script>
+  <script src="js/application.js"></script>
+  <script src="js/modules/twitter/models.js"></script>
+  <script src="js/modules/twitter/views.js"></script>
+
+  <script>
+    $(function() {
+      window.App = new Demo.AppView({
+        el: $('#tweets')
+      });
+    });
+  </script>
 </body>
 </html>
