@@ -11,7 +11,7 @@ define([
 
         tagName: 'ul',
 
-        className: 'tweets',
+        className: 'tweets container-fluid',
 
         template: Handlebars.compile(textTemplate),
 

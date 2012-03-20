@@ -3,17 +3,37 @@ define([
         'underscore', 
         'backbone',
         'handlebars',
+        'synapse',
+        'synapse/hooks/object',
+        'synapse/hooks/jquery',
+        'synapse/hooks/backbone-model',
         'twitter/collections/tweets',
-        'twitter/models/search',
+        'twitter/models/searcher',
         'twitter/views/tweetsview'
-    ], function($, _, Backbone, Handlebars, Tweets, Search, TweetsView) {
+    ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, Tweets, Searcher, TweetsView) {
+
+    Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
     
     // Global application namespace
     var App = {};
 
     // Tweets for this application
     App.Tweets = new Tweets();
-    App.Search = new Search();
+    App.Searcher = new Searcher();
+
+    // Search view that binds the input box value with 
+    // the Searcher model's query attribute.
+    var SearchView = Backbone.View.extend({
+        initialize: function() {
+            // Auto data-binding between model and element
+            var data = Synapse(this.model),
+                query = Synapse($(this.el));
+            data.observe(query);
+
+            // Auto-focus on search box
+            $(this.el).focus();
+        }
+    });
 
     // Main application view
     var AppView = Backbone.View.extend({
@@ -21,10 +41,10 @@ define([
         el: $('#twitter-app'),
 
         initialize: function() {
-            _.bindAll(this, 'onResultsChange', 'render');
+            _.bindAll(this, 'showResults', 'showLoader');
 
-            App.Search.bind('change:query', this.render);
-            App.Search.bind('change:results', this.onResultsChange);
+            App.Searcher.bind('change:query', this.showLoader);
+            App.Searcher.bind('change:results', this.showResults);
 
             // Create view for tweets
             this.tweetsView = new TweetsView({
@@ -32,17 +52,21 @@ define([
             });
             $(this.el).append(this.tweetsView.el);
 
-            App.Search.set({ query: 'bieber' });
+            this.searchView = new SearchView({
+                el: this.$('#query'),
+                model: App.Searcher
+            });
         },
 
-        render: function() {
-            //this.$('h2').text(App.Search.get('query'));
-            return this;
+        showLoader: function() {
+            $(this.el).addClass('loading');
         },
 
-        onResultsChange: function(search, data) {
+        showResults: function(searcher, data) {
             // Refresh tweets collection with source data
+            var results = data ? data.results : [];
             App.Tweets.reset(data.results);
+            $(this.el).removeClass('loading');
         }
     });
 

@@ -27,7 +27,7 @@ define([
 
             // Poll Twitter
             var that = this,
-                url = "http://search.twitter.com/search.json?q=" + query + "&callback=?";
+                url = "http://search.twitter.com/search.json?q=" + encodeURIComponent(query) + "&callback=?";
 
             $.getJSON(url, function(data) {
                 that.set({ results: data });

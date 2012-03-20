@@ -1,4 +1,12 @@
 {{#each tweets}}
-  <li class="tweet">{{text}}</li>
+  <li class="tweet row-fluid">
+  <span class="span1">
+    <img src="{{profile_image_url}}" alt="">
+  </span>
+  <span class="span11">
+    <strong>{{from_user_name}}</strong>
+    {{text}}
+  </span>
+  </li>
 {{/each}}
 
