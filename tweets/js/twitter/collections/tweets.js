@@ -14,6 +14,8 @@ define([
             this._idCache = {};
         },
         
+        // Override the default add function so we don't add a tweet
+        // with the same ID twice.
         add: function(sources, options) {
             var that = this;
             if (_.isArray(sources)) {

@@ -4,22 +4,26 @@ define([
         'backbone',
         'handlebars',
         'twitter/collections/tweets',
+        'twitter/models/search',
         'twitter/views/tweetsview'
-    ], function($, _, Backbone, Handlebars, Tweets, TweetsView) {
+    ], function($, _, Backbone, Handlebars, Tweets, Search, TweetsView) {
     
     // Global application namespace
     var App = {};
 
     // Tweets for this application
     App.Tweets = new Tweets();
+    App.Search = new Search();
 
     // Main application view
     var AppView = Backbone.View.extend({
         // Use existing DOM element
         el: $('#twitter-app'),
 
-        initialize: function(options) {
-            options = options || {};
+        initialize: function() {
+            _.bindAll(this, 'onResultsChange');
+
+            App.Search.bind('change:results', this.onResultsChange);
 
             // Create view for tweets
             this.tweetsView = new TweetsView({
@@ -27,13 +31,16 @@ define([
             });
             $(this.el).append(this.tweetsView.el);
 
-            App.Tweets.reset([
-                { text: 'hello world!' }
-            ]);
+            App.Search.set({ query: 'bieber' });
         },
 
         render: function() {
             return this;
+        },
+
+        onResultsChange: function(search, data) {
+            // Refresh tweets collection with source data
+            App.Tweets.reset(data.results);
         }
     });
 
