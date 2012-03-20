@@ -2,15 +2,28 @@ define([
         'jquery', 
         'underscore', 
         'backbone',
+        'handlebars',
         '../models/tweet',
         '../collections/tweets',
-        './tweetview'
-    ], function($, _, Backbone, Tweet, Tweets, TweetView){
+        'text!templates/tweets.html'
+    ], function($, _, Backbone, Handlebars, Tweet, Tweets, textTemplate){
     var TweetsView = Backbone.View.extend({
+
+        tagName: 'ul',
+
+        className: 'tweets',
+
+        template: Handlebars.compile(textTemplate),
+
         initialize: function() {
+            _.bindAll(this, 'render');
+            this.collection.bind('all', this.render);
         }, 
 
         render: function() {
+            $(this.el).html( this.template({
+                tweets: this.collection.toJSON()
+            }) );
             return this;
         }
     });

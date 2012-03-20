@@ -4,26 +4,40 @@ define([
         'backbone',
         'handlebars',
         'twitter/collections/tweets',
-        'twitter/views/tweetsview',
-        'text!templates/app.html'
-    ], function($, _, Backbone, Handlebars, Tweets, TweetsView, appTemplate){
+        'twitter/views/tweetsview'
+    ], function($, _, Backbone, Handlebars, Tweets, TweetsView) {
+    
+    // Global application namespace
+    var App = {};
+
+    // Tweets for this application
+    App.Tweets = new Tweets();
+
+    // Main application view
     var AppView = Backbone.View.extend({
         // Use existing DOM element
         el: $('#twitter-app'),
 
-        // Use async loaded template
-        template: Handlebars.compile(appTemplate),
-
         initialize: function(options) {
             options = options || {};
+
+            // Create view for tweets
+            this.tweetsView = new TweetsView({
+                collection: App.Tweets
+            });
+            $(this.el).append(this.tweetsView.el);
+
+            App.Tweets.reset([
+                { text: 'hello world!' }
+            ]);
         },
 
         render: function() {
-            $(this.template({
-                heading: 'test'
-            })).appendTo(this.el);
             return this;
         }
     });
-    return AppView;
+
+    App.AppView = new AppView();
+
+    return App;
 });

@@ -9,8 +9,8 @@ require.config({
     }
 });
 
-require(['app'], function(AppView) {
-    var app = new AppView();
-    app.render();
+require([
+        'app'
+    ], function(app) {
     window.App = app;
 });
