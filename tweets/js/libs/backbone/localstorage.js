@@ -1,3 +1,5 @@
+define(['underscore', 'backbone'], function(_, Backbone){
+
 // A simple module to replace `Backbone.sync` with *localStorage*-based
 // persistence. Models are given GUIDS, and saved into a JSON object. Simple
 // as that.
@@ -82,3 +84,5 @@ Backbone.sync = function(method, model, options) {
     options.error("Record not found");
   }
 };
+return Store;
+});

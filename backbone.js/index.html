@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Building Large JavaSript Applications With Backbone.js</title>
+    <title>Building Scalable JavaSript Applications</title>
 
     <meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
     <meta name="author" content="Hakim El Hattab">
@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="assets/css/zenburn.css">
 
     <style>
+      ul, ol {
+        margin-left: 40px;
+      }
       dl {
         text-align: left;
       }
@@ -48,7 +51,7 @@
       <div class="slides">
         <section>
           <h1>Backbone.js</h1>
-          <h3 class="inverted">Building Large-Scale JavaScript Applications</h3>
+          <h3 class="inverted">Building Scalable JavaScript Applications</h3>
           <script>
             // Delicously hacky. Look away.
             if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
@@ -59,9 +62,10 @@
         <section>
           <h2>Agenda</h2>
           <ul>
-            <li>Background</li>
+            <li>Problem &amp; motivation</li>
             <li>Design patterns</li>
-            <li>Backbone.js</li>
+            <li>Overview of Backbone.js</li>
+            <li>Working example using Backbone.js</li>
             <li>Code testing with Jasmine</li>
             <li>Backbone.js vs Ember.js</li>
           </ul>
@@ -150,53 +154,15 @@ $.ajax({
 
         <section>
           <h3>Addressing the problems</h3>
-          <p>Some patterns that will help</p>
+          <p>Two patterns that will help</p>
           <ul>
-            <li>Namespacing pattern</li>
             <li>Module pattern</li>
-            <li>MVC and MV* patterns</li>
+            <li>MVC / MV* pattern</li>
           </ul>
         </section>
 
         <section>
-          <section>
-            <h3>Namespacing</h3>
-            <p>In JavaScript, hash objects are used for namespacing</p>
-            <pre><code contenteditable>var foo = {
-    bar: {
-      faz: {
-        baz: {}
-    }
-  };
-
-  foo.bar.faz.baz.MyModel = function() {};</code></pre>
-          </section>
-
-          <section>
-            <h3>Better way to do namespacing</h3>
-            <pre><code contenteditable>function namespace(ns, obj) {
-  var ns = ns.split('.'), 
-    p = window,
-    i, k;
-  for(i=0; i&lt;ns.length; i++) 
-    p = p[ns[i]] = p[ns[i]] || {};
-  if (obj) {
-    obj = obj instanceof Function ? obj(p) : obj;
-    for (k in obj) {
-      if (obj.hasOwnProperty(k))
-        p[k] = obj[k];
-    }
-  }
-}</code></pre>
-            <p class="fragment">Now we can use the namespace function</p>
-            <pre class="fragment"><code contenteditable>namespace('foo.bar.faz.baz', function(Baz) {
-  Baz.MyModel = function() {};
-});</code></pre>
-          </section>
-        </section>
-
-        <section>
-          <h3>Module loading</h3>
+          <h3>The Module Pattern</h3>
           <p>Two options:</p>
           <ol>
             <li>Roll your own module system <span class="fragment">&check;</span></li>
@@ -220,6 +186,10 @@ $.ajax({
           <section>
             <h3>Defining a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
+  // Private stuff
+  /* ... */
+
+  // Public stuff
   Foo.BarModel = function() {
     this.message = 'Hello World!';
   };
@@ -235,24 +205,6 @@ $.ajax({
           </section>
         </section>
 
-        <section>
-          <h3>Combining module and namespacing</h3>
-          <p>Add namespacing support for module function</p>
-          <pre class="code-large"><code contenteditable>// Add namespacing support for module()
-function module(ns) {
-  var ns = ns.split('.'), 
-    p = window,
-    i, k;
-  for(i=0; i&lt;ns.length; i++) 
-    p = p[ns[i]] = p[ns[i]] || {};
-  return p;
-}                    
-
-// Defining a namespaced module
-(function(Baz) {
-  Baz.MyModel = function() {};
-})( module('foo.bar.faz.baz') );</code></pre>
-        </section>
 
       <section>
           <section>

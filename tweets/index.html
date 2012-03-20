@@ -21,30 +21,14 @@
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
+
+  <script data-main="js/index" src="js/libs/require/require.js"></script>
+
 </head>
 <body>
 
-  <div id="tweets">
+  <div id="twitter-app">
   </div>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="js/lib/jquery-1.6.4.min.js"%3E%3C/script%3E'))</script>
-
-  <script src="js/lib/json2.js"></script>
-  <script src="js/lib/underscore.js"></script>
-  <script src="js/lib/backbone.js"></script>
-  <script src="js/lib/backbone-localstorage.js"></script>
-
-  <script src="js/application.js"></script>
-  <script src="js/modules/twitter/models.js"></script>
-  <script src="js/modules/twitter/views.js"></script>
-
-  <script>
-    $(function() {
-      window.App = new Demo.AppView({
-        el: $('#tweets')
-      });
-    });
-  </script>
 </body>
 </html>

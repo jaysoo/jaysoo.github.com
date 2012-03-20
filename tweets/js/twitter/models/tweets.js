@@ -1,7 +1,9 @@
-(function(Twitter) {
-    Twitter.Tweet = Backbone.Model.extend({});
-
-    Twitter.Tweets = Backbone.Collection.extend({
+define([
+        'backbone',
+        '../models/tweet'
+    ], 
+    function(Backbone, Tweet) {
+    var Tweets = Backbone.Collection.extend({
         model: Twitter.Tweet,
 
         // Keep track of unique tweets
@@ -22,4 +24,5 @@
             }
         }
     });
-})( _.module('Demo.twitter') );
+    return Tweets;
+});

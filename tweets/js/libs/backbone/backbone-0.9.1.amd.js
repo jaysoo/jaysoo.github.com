@@ -1,3 +1,21 @@
+// Backbone.js AMD wrapper
+define([
+  'exports',
+  'underscore',
+  'jquery'
+],
+function(exports, _, jQuery) {
+
+  var scope = {
+    '_': _,
+    'jQuery': jQuery
+  };
+
+
+  (function() {
+
+// start Backbone /////////////////////////////////////////////////////////////
+
 //     Backbone.js 0.9.1
 
 //     (c) 2010-2012 Jeremy Ashkenas, DocumentCloud Inc.
@@ -1288,3 +1306,8 @@
   };
 
 }).call(this);
+
+// end Backbone ///////////////////////////////////////////////////////////////
+
+  }).call(scope);
+});
