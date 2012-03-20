@@ -16,6 +16,8 @@
 
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
   <link rel="stylesheet" href="css/style.css?v=2">
 
   <!--[if lt IE 9]>
@@ -26,11 +28,26 @@
 
 </head>
 <body>
-
-  <div id="twitter-app">
-    <h1>Live Tweets</h1>
-    <div id="#tweets"></div>
+  <div class="container">
+    <header>
+      <h1>Demo</h1>
+    </header>
+    <div id="twitter-app">
+      <div class="intro">
+        <h2>Live search for tweets</h2>
+        <p>Enter terms in the box and hit Go!</p>
+      </div>
+      <div class="full-search-bar">
+        <form class="form-inline search-form well clearfix">
+          <input id="query" type="text" placeholder="Cats, Bieber, Unicorns..." autocomplete="off">
+          <button class="btn btn-large btn-primary" id="query-submit" type="submit">Go</button>
+        </form>
+      </div>
+      <div id="#tweets">
+      </div>
+    </div>
   </div>
-
+  <footer>
+  </footer>
 </body>
 </html>

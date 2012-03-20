@@ -21,8 +21,9 @@ define([
         el: $('#twitter-app'),
 
         initialize: function() {
-            _.bindAll(this, 'onResultsChange');
+            _.bindAll(this, 'onResultsChange', 'render');
 
+            App.Search.bind('change:query', this.render);
             App.Search.bind('change:results', this.onResultsChange);
 
             // Create view for tweets
@@ -35,6 +36,7 @@ define([
         },
 
         render: function() {
+            //this.$('h2').text(App.Search.get('query'));
             return this;
         },
 
