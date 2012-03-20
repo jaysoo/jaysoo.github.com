@@ -52,9 +52,10 @@ define([
         el: $('#twitter-app'),
 
         initialize: function() {
-            _.bindAll(this, 'showResults', 'showLoader');
+            _.bindAll(this, 'showResults', 'showLoader', 'hideLoader');
 
-            App.Searcher.bind('change:query', this.showLoader);
+            App.Searcher.bind('ajax:before', this.showLoader);
+            App.Searcher.bind('ajax:after', this.hideLoader);
             App.Searcher.bind('change:results', this.showResults);
 
             // Create view for tweets
@@ -70,14 +71,17 @@ define([
         },
 
         showLoader: function() {
-            $(this.el).addClass('loading');
+            $(this.tweetsView.el).addClass('loading');
+        },
+
+        hideLoader: function() {
+            $(this.tweetsView.el).removeClass('loading');
         },
 
         showResults: function(searcher, data) {
             // Refresh tweets collection with source data
             var results = data ? data.results : [];
             App.Tweets.reset(results);
-            $(this.el).removeClass('loading');
         }
     });
 

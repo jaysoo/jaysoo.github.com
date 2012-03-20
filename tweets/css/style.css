@@ -38,13 +38,14 @@ body {
     }
 
 .loading {
-  background: transparent url(../img/loading.gif) no-repeat 50% 50%;
+  min-height: 50px;
+  background: transparent url(../img/ajax-loader.gif) no-repeat 50% 10px;
+  padding-top: 15px;
 }
 
 .tweets {
   width: 770px;
   margin: 0 200px;
-  padding: 0;
   list-style-type: none;
 }
   .tweet {

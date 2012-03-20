@@ -29,7 +29,10 @@ define([
             var that = this,
                 url = "http://search.twitter.com/search.json?q=" + encodeURIComponent(query) + "&callback=?";
 
+            this.trigger('ajax:before');
+
             $.getJSON(url, function(data) {
+                that.trigger('ajax:after');
                 that.set({ results: data });
             });
         }
