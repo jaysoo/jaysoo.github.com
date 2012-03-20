@@ -58,7 +58,16 @@ header {
 }
   header h1 {
     color: #fff;
-    font-weight: normal
+    font-weight: normal;
+    margin-bottom: 10px;
+  }
+
+footer {
+  padding: 10px 0;
+  color: #ccc
+}
+  footer p {
+    text-align: center;
   }
 
 #twitter-app {
