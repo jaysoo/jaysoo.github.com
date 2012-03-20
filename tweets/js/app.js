@@ -24,14 +24,25 @@ define([
     // Search view that binds the input box value with 
     // the Searcher model's query attribute.
     var SearchView = Backbone.View.extend({
+        events: {
+            'click .close': 'clearSearch'
+        },
+
         initialize: function() {
-            // Auto data-binding between model and element
+            this.$queryInput = this.$('[name=query]');
+
+            // Data-binding between model and element
             var data = Synapse(this.model),
-                query = Synapse($(this.el));
+                query = Synapse(this.$queryInput);
             data.observe(query);
+            query.observe(data);
 
             // Auto-focus on search box
-            $(this.el).focus();
+            this.$queryInput.focus();
+        },
+
+        clearSearch: function() {
+            this.model.set({ query: '' });
         }
     });
 
@@ -53,7 +64,7 @@ define([
             $(this.el).append(this.tweetsView.el);
 
             this.searchView = new SearchView({
-                el: this.$('#query'),
+                el: this.$('#search-form'),
                 model: App.Searcher
             });
         },
@@ -65,7 +76,7 @@ define([
         showResults: function(searcher, data) {
             // Refresh tweets collection with source data
             var results = data ? data.results : [];
-            App.Tweets.reset(data.results);
+            App.Tweets.reset(results);
             $(this.el).removeClass('loading');
         }
     });
