@@ -10,10 +10,11 @@ define([
         'twitter/collections/tweets',
         'twitter/models/searcher',
         'twitter/views/tweetsview',
+        'twitter/views/searcherview',
         'timer/models/timer',
         'timer/views/timerview'
     ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
-        Tweets, Searcher, TweetsView, Timer, TimerView) {
+        Tweets, Searcher, TweetsView, SearcherView, Timer, TimerView) {
 
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
     
@@ -27,31 +28,6 @@ define([
     App.Searcher = new Searcher();
 
     App.Timer = new Timer();
-
-    // Search view that binds the input box value with 
-    // the Searcher model's query attribute.
-    var SearchView = Backbone.View.extend({
-        events: {
-            'click .close': 'clearSearch'
-        },
-
-        initialize: function() {
-            this.$queryInput = this.$('[name=query]');
-
-            // Data-binding between model and element
-            var data = Synapse(this.model),
-                query = Synapse(this.$queryInput);
-            data.observe(query);
-            query.observe(data);
-
-            // Auto-focus on search box
-            this.$queryInput.focus();
-        },
-
-        clearSearch: function() {
-            this.model.set({ query: '' });
-        }
-    });
 
     // Main application view
     var AppView = Backbone.View.extend({
@@ -81,7 +57,7 @@ define([
                 el: this.$('.tweets')
             });
 
-            this.searchView = new SearchView({
+            this.searcherView = new SearcherView({
                 el: this.$('#search-form'),
                 model: App.Searcher
             });
