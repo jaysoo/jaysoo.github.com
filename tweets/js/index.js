@@ -1,3 +1,4 @@
+// Setup AMD paths
 require.config({
     paths: {
         handlebars: 'libs/handlebars/handlebars',
@@ -15,6 +16,7 @@ require.config({
     }
 });
 
+// Create the main application
 require([
         'app'
     ], function(App) {

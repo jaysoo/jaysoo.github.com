@@ -1,3 +1,21 @@
+/*
+ * Timer model that emits a "alarm" event.
+ *
+ * Has three functions for public use:
+ *   start() - starts the timer
+ *   stop() - stops the timer
+ *   resetTime() - resets the timer to max time
+ *
+ * Usage:
+ * var timer = new Timer({ max: 30 }); // Countdown from 30 seconds
+ * timer.get('time'); //--> 30
+ * timer.bind('alarm', function() { alert('Bzzt!'); timer.stop() });
+ * timer.start();
+ *
+ * // Wait for 30 seconds
+ * //--> Alerts "Bzzt!"
+ *
+ */
 define([
         'underscore',
         'backbone'

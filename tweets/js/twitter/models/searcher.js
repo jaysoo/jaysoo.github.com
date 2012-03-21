@@ -1,3 +1,6 @@
+/*
+ * A repository type of object that performs searches against the public Twitter API.
+ */
 define([
         'jquery',
         'underscore',
@@ -19,11 +22,15 @@ define([
         },
 
         onQueryChange: function() {
+            // Initial query URL
+            // Once data returns, we can grab the "refresh_url" data for future tweets using the same query
             this.url = this.baseUrl + '?q=' + encodeURIComponent(this.get('query')) + '&callback=?';
+            // Pull in data
             this.refresh();
         },
 
         refresh: function() {
+            // Current query
             var query = this.get('query');
 
             // Only fetch if we have a query set.
@@ -35,14 +42,18 @@ define([
             var that = this,
                 data = this.get('results');
 
+            // Event for those interested...
             this.trigger('ajax:before');
 
+            // Fetch data
             $.getJSON(this.url, this.loadData);
         },
 
         loadData: function(data) {
+            // Event for those interested...
             this.trigger('ajax:after');
             this.set({ results: data });
+            // Use the URL provided by Twitter for subsequent fetches to same query
             this.url = this.baseUrl + data.refresh_url + '&callback=?';
         }
     });

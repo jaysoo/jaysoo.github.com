@@ -1,3 +1,7 @@
+/*
+ * SearcherView that provides data-binding between the "[name=query]" DOM element
+ * and the Searcher's query attribute.
+ */
 define([
         'jquery',
         'underscore', 
@@ -11,6 +15,7 @@ define([
     ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
         Searcher) {
 
+    // Add additional hooks to Synapse for data-binds between Backbone model and jQuery object
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
 
     // Search view that binds the input box value with 
@@ -38,7 +43,6 @@ define([
             this.$queryInput.focus();
         }
     });
-
     return SearcherView;
 });
 

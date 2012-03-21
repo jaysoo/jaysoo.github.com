@@ -1,3 +1,6 @@
+/*
+ * The main application module
+ */
 define([
         'jquery',
         'underscore', 
@@ -16,9 +19,10 @@ define([
     ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
         Tweets, Searcher, TweetsView, SearcherView, Timer, TimerView) {
 
+    // For data-binding support between Backbone and jQuery objects
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
     
-    // Global application namespace
+    // Application namespace object to be returned
     var App = {};
 
     // Tweets for this application
@@ -27,42 +31,48 @@ define([
     // Model for performing searches
     App.Searcher = new Searcher();
 
+    // Timer for auto-refreshing support
     App.Timer = new Timer();
 
     // Main application view
     var AppView = Backbone.View.extend({
-        // Use existing DOM element
+
+        // Use existing DOM element instead of creating a new one
         el: $('#twitter-app'),
 
-        // Amount of time in between pulls
-        refreshInterval: 5000,
-
         initialize: function() {
+            // Make sure that 'this' is pointed to this AppView instance for the following functions
             _.bindAll(this, 'displayResults', 'showLoader', 'onQueryChange', 'toggleTimer');
 
+            // Setup handlers for events of interest
             App.Searcher.bind('ajax:before', this.showLoader);
             App.Searcher.bind('change:query', this.onQueryChange);
             App.Searcher.bind('change:results', this.displayResults);
-
             App.Timer.bind('change:started', this.toggleTimer);
+            App.Timer.bind('alarm', App.Searcher.refresh);
 
+            // Timer view for the countdown between refreshes
             this.timerView = new TimerView({
-                model: App.Timer,
-                el: this.$('.timer')
+                // Use existing DOM element
+                el: this.$('.timer'),
+                model: App.Timer
             });
 
+            // Main tweets view for results
             this.tweetsView = new TweetsView({
-                collection: App.Tweets,
-                el: this.$('.tweets')
+                // Use existing DOM element
+                el: this.$('.tweets'),
+                collection: App.Tweets
             });
 
+            // Input box for the live search
             this.searcherView = new SearcherView({
+                // Use existing DOM element
                 el: this.$('#search-form'),
                 model: App.Searcher
             });
 
-            App.Timer.bind('alarm', App.Searcher.refresh);
-
+            // Data-binding between the query <span> in the countdown and the Seacher's query attribute
             Synapse(this.timerView.$('span[name=query]')).observe(App.Searcher);
         },
 
@@ -71,31 +81,39 @@ define([
         },
 
         onQueryChange: function() {
+            // Remove previous tweets
             App.Tweets.reset([]);
+
+            // Reset timer
             App.Timer.resetTime();
-            if (App.Searcher.get('query')) {
+
+            // If query is empty/null then stop timer, else start timer
+            if (App.Searcher.get('query'))
                 App.Timer.start();
-            } else {
+            else
                 App.Timer.stop();
-            }
         },
 
+        // debounce for some delay before displaying results
         displayResults: _.debounce(function(searcher, data) {
             // Refresh tweets collection with source data
             var results = data ? data.results : [];
+            // Add to beginning of collection
             App.Tweets.add(results, { at: 0 });
+            // Remove loading indicator
             $(this.tweetsView.el).removeClass('loading');
         }, 300),
 
+        // When timer starts or stops, we want to show or hide the timer view respectively
         toggleTimer: function() {
-            if (App.Timer.get('started')) {
+            if (App.Timer.get('started'))
                 $(this.timerView.el).show();
-            } else {
+            else
                 $(this.timerView.el).hide();
-            }
         }
     });
 
+    // Create AppView and return the App namespace
     App.View = new AppView();
     return App;
 });
