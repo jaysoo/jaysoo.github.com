@@ -19,7 +19,7 @@ define([
         },
 
         onQueryChange: function() {
-            this.url = this.baseUrl + '?q=' + this.get('query') + '&callback=?';
+            this.url = this.baseUrl + '?q=' + encodeURIComponent(this.get('query')) + '&callback=?';
             this.refresh();
         },
 
