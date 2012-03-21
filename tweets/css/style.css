@@ -44,15 +44,22 @@ body {
 
 .tweets {
   width: 770px;
-  margin: 0 200px;
+  margin: 0;
   padding-top: 15px;
   list-style-type: none;
 }
   .tweet {
-    margin: 10px 0;
+    margin-bottom: 10px;
   }
   .tweet img {
     max-width: 48px;
+  }
+
+.timer {
+  font-size: 16px;
+}
+  .timer time {
+    font-weight: bold;
   }
 
 header {
@@ -72,7 +79,7 @@ footer {
   }
 
 #twitter-app {
-  padding: 20px;
+  padding: 20px 200px;
   background-color: #fff;
   color: #444;
   -webkit-border-radius: 6px;

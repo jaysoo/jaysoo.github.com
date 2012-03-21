@@ -9,8 +9,11 @@ define([
         'synapse/hooks/backbone-model',
         'twitter/collections/tweets',
         'twitter/models/searcher',
-        'twitter/views/tweetsview'
-    ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, Tweets, Searcher, TweetsView) {
+        'twitter/views/tweetsview',
+        'timer/models/timer',
+        'timer/views/timerview'
+    ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
+        Tweets, Searcher, TweetsView, Timer, TimerView) {
 
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
     
@@ -22,6 +25,8 @@ define([
     
     // Model for performing searches
     App.Searcher = new Searcher();
+
+    App.Timer = new Timer();
 
     // Search view that binds the input box value with 
     // the Searcher model's query attribute.
@@ -56,29 +61,34 @@ define([
         // Amount of time in between pulls
         refreshInterval: 5000,
 
-        // For setInterval
-        t: null,
-
         initialize: function() {
-            _.bindAll(this, 'displayResults', 'showLoader', 'hideLoader', 'onQueryChange');
+            _.bindAll(this, 'displayResults', 'showLoader', 'hideLoader', 'onQueryChange', 'toggleTimer');
 
             App.Searcher.bind('ajax:before', this.showLoader);
             App.Searcher.bind('ajax:after', this.hideLoader);
             App.Searcher.bind('change:query', this.onQueryChange);
             App.Searcher.bind('change:results', this.displayResults);
 
-            // Create view for tweets
-            this.tweetsView = new TweetsView({
-                collection: App.Tweets
+            App.Timer.bind('change:started', this.toggleTimer);
+
+            this.timerView = new TimerView({
+                model: App.Timer,
+                el: this.$('.timer')
             });
-            $(this.el).append(this.tweetsView.el);
+
+            this.tweetsView = new TweetsView({
+                collection: App.Tweets,
+                el: this.$('.tweets')
+            });
 
             this.searchView = new SearchView({
                 el: this.$('#search-form'),
                 model: App.Searcher
             });
 
-            this.t = setInterval(App.Searcher.refresh, 10000);
+            App.Timer.bind('alarm', App.Searcher.refresh);
+
+            Synapse(this.timerView.$('span[name=query]')).observe(App.Searcher);
         },
 
         showLoader: function() {
@@ -91,12 +101,26 @@ define([
 
         onQueryChange: function() {
             App.Tweets.reset([]);
+            App.Timer.resetTime();
+            if (App.Searcher.get('query')) {
+                App.Timer.start();
+            } else {
+                App.Timer.stop();
+            }
         },
 
         displayResults: function(searcher, data) {
             // Refresh tweets collection with source data
             var results = data ? data.results : [];
             App.Tweets.add(results, { at: 0 });
+        },
+
+        toggleTimer: function() {
+            if (App.Timer.get('started')) {
+                $(this.timerView.el).show();
+            } else {
+                $(this.timerView.el).hide();
+            }
         }
     });
 
