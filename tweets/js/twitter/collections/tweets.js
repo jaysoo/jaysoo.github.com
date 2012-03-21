@@ -18,7 +18,11 @@ define([
         // with the same ID twice.
         add: function(sources, options) {
             var that = this;
-            if (_.isArray(sources)) {
+            if (sources instanceof Backbone.Collection) {
+                sources.each(function(source) {
+                    that._addIfUnique(source, options);
+                });
+            } else if (_.isArray(sources)) {
                 _.each(sources, function(source) {
                     that._addIfUnique(source, options)
                 });
@@ -28,7 +32,7 @@ define([
         },
 
         _addIfUnique: function(source, options) {
-            var id = source.id;
+            var id = source instanceof Backbone.Model ? source.get('id') : source.id;
 
             // Only add this if the id hasn't been loaded yet
             if (this._idCache[id] === undefined) {
