@@ -38,10 +38,9 @@ define([
         refreshInterval: 5000,
 
         initialize: function() {
-            _.bindAll(this, 'displayResults', 'showLoader', 'hideLoader', 'onQueryChange', 'toggleTimer');
+            _.bindAll(this, 'displayResults', 'showLoader', 'onQueryChange', 'toggleTimer');
 
             App.Searcher.bind('ajax:before', this.showLoader);
-            App.Searcher.bind('ajax:after', this.hideLoader);
             App.Searcher.bind('change:query', this.onQueryChange);
             App.Searcher.bind('change:results', this.displayResults);
 
@@ -71,10 +70,6 @@ define([
             $(this.tweetsView.el).addClass('loading');
         },
 
-        hideLoader: function() {
-            $(this.tweetsView.el).removeClass('loading');
-        },
-
         onQueryChange: function() {
             App.Tweets.reset([]);
             App.Timer.resetTime();
@@ -85,11 +80,12 @@ define([
             }
         },
 
-        displayResults: function(searcher, data) {
+        displayResults: _.debounce(function(searcher, data) {
             // Refresh tweets collection with source data
             var results = data ? data.results : [];
             App.Tweets.add(results, { at: 0 });
-        },
+            $(this.tweetsView.el).removeClass('loading');
+        }, 300),
 
         toggleTimer: function() {
             if (App.Timer.get('started')) {

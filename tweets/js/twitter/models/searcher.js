@@ -12,7 +12,7 @@ define([
         },
 
         initialize: function() {
-            _.bindAll(this, 'onQueryChange', 'refresh');
+            _.bindAll(this, 'onQueryChange', 'refresh', 'loadData');
 
             // Refresh results when query changes
             this.bind('change:query', this.onQueryChange);
@@ -37,11 +37,13 @@ define([
 
             this.trigger('ajax:before');
 
-            $.getJSON(this.url, function(data) {
-                that.trigger('ajax:after');
-                that.set({ results: data });
-                that.url = that.baseUrl + data.refresh_url + '&callback=?';
-            });
+            $.getJSON(this.url, this.loadData);
+        },
+
+        loadData: function(data) {
+            this.trigger('ajax:after');
+            this.set({ results: data });
+            this.url = this.baseUrl + data.refresh_url + '&callback=?';
         }
     });
     return Search;
