@@ -35,6 +35,7 @@ define([
 
         clearSearch: function() {
             this.model.set({ query: '' });
+            this.$queryInput.focus();
         }
     });
 
