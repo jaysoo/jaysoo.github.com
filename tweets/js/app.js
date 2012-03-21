@@ -100,7 +100,5 @@ define([
         }
     });
 
-    App.AppView = new AppView();
-
-    return App;
+    return new AppView();
 });

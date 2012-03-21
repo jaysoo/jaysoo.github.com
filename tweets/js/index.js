@@ -17,6 +17,6 @@ require.config({
 
 require([
         'app'
-    ], function(app) {
-    window.App = app;
+    ], function(App) {
+    window.App = App;
 });
