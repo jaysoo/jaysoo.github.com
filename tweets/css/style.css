@@ -40,12 +40,12 @@ body {
 .loading {
   min-height: 50px;
   background: transparent url(../img/ajax-loader.gif) no-repeat 50% 10px;
-  padding-top: 15px;
 }
 
 .tweets {
   width: 770px;
   margin: 0 200px;
+  padding-top: 15px;
   list-style-type: none;
 }
   .tweet {
