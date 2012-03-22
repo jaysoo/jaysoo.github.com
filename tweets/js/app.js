@@ -42,11 +42,12 @@ define([
 
         initialize: function() {
             // Make sure that 'this' is pointed to this AppView instance for the following functions
-            _.bindAll(this, 'displayResults', 'showLoader', 'onQueryChange', 'toggleTimer');
+            _.bindAll(this, 'displayResults', 'showLoader', 'updateTimer', 'toggleTimer', 'clearResults');
 
             // Setup handlers for events of interest
             App.Searcher.bind('ajax:before', this.showLoader);
-            App.Searcher.bind('change:query', this.onQueryChange);
+            App.Searcher.bind('ajax:after', this.clearResults);
+            App.Searcher.bind('change:query', this.updateTimer);
             App.Searcher.bind('change:results', this.displayResults);
             App.Timer.bind('change:started', this.toggleTimer);
             App.Timer.bind('alarm', App.Searcher.refresh);
@@ -80,10 +81,12 @@ define([
             $(this.tweetsView.el).addClass('loading');
         },
 
-        onQueryChange: function() {
+        clearResults: function() {
             // Remove previous tweets
             App.Tweets.reset([]);
+        },
 
+        updateTimer: function() {
             // Reset timer
             App.Timer.resetTime();
 
