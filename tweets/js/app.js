@@ -10,6 +10,7 @@ define([
         'synapse/hooks/object',
         'synapse/hooks/jquery',
         'synapse/hooks/backbone-model',
+        'mixins',
         'twitter/collections/tweets',
         'twitter/models/searcher',
         'twitter/views/tweetsview',
@@ -17,7 +18,7 @@ define([
         'timer/models/timer',
         'timer/views/timerview'
     ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
-        Tweets, Searcher, TweetsView, SearcherView, Timer, TimerView) {
+        Mixins, Tweets, Searcher, TweetsView, SearcherView, Timer, TimerView) {
 
     // For data-binding support between Backbone and jQuery objects
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
@@ -81,11 +82,6 @@ define([
             $(this.tweetsView.el).addClass('loading');
         },
 
-        clearResults: function() {
-            // Remove previous tweets
-            App.Tweets.reset([]);
-        },
-
         updateTimer: function() {
             // Reset timer
             App.Timer.resetTime();
@@ -98,15 +94,30 @@ define([
             }
         },
 
-        // debounce for some delay before displaying results
-        displayResults: _.debounce(function(searcher, data) {
-            // Refresh tweets collection with source data
-            var results = data ? data.results : [];
-            // Add to beginning of collection
-            App.Tweets.add(results, { at: 0 });
-            // Remove loading indicator
-            $(this.tweetsView.el).removeClass('loading');
-        }, 300),
+        // Queue clear in the buffer so it is executed in order
+        clearResults: function() {
+            this.buffer(function(next) {
+                // Execute previous in buffer;
+                next();
+                // Remove previous tweets
+                App.Tweets.reset([]);
+            });
+        },
+
+        // Queue display in the buffer so it is executed in order
+        displayResults: function(searcher, data) {
+            var that = this;
+            this.buffer(function(next) {
+                // Execute previous in buffer;
+                next();
+                // Refresh tweets collection with source data
+                var results = data ? data.results : [];
+                // Add to beginning of collection
+                App.Tweets.add(results, { at: 0 });
+                // Remove loading indicator
+                $(that.tweetsView.el).removeClass('loading');
+            });
+        },
 
         // When timer starts or stops, we want to show or hide the timer view respectively
         toggleTimer: function() {
@@ -116,6 +127,7 @@ define([
                 $(this.timerView.el).hide();
         }
     });
+    _.extend(AppView.prototype, Mixins.Buffer);
 
     // Create AppView and return the App namespace
     App.View = new AppView();
