@@ -1,20 +1,28 @@
 define([], function() {
     var Mixins = {};
     Mixins.Buffer = {
-        commands: [],
+        bufferQueue: [],
 
-        buffer: function(fn) {
+        buffer: function(fn, options) {
+            options = options || {};
             // Adds a command to the buffer, and executes it if it's
             // the only command to be ran.
-            var commands = this.commands;
-            commands.push(fn);
-            if (this.commands.length == 1) fn(next);
+            var that = this;
+            if (options.shift)
+                that.bufferQueue.unshift(fn);
+            else 
+                that.bufferQueue.push(fn);
+            if (that.bufferQueue.length == 1) fn(next);
 
             // Moves onto the next command in the buffer.
             function next() {
-                commands.shift();
-                if (commands.length) commands[0](next);
+                that.bufferQueue.shift();
+                if (that.bufferQueue.length) that.bufferQueue[0](next);
             }
+        },
+
+        clearBuffer: function() {
+            this.bufferQueue = [];
         }
     };
     return Mixins;

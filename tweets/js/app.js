@@ -94,29 +94,26 @@ define([
             }
         },
 
-        // Queue clear in the buffer so it is executed in order
         clearResults: function() {
-            this.buffer(function(next) {
-                // Execute previous in buffer;
-                next();
-                // Remove previous tweets
-                App.Tweets.reset([]);
-            });
+            this.clearBuffer();
+            // Remove previous tweets
+            App.Tweets.reset([]);
         },
 
-        // Queue display in the buffer so it is executed in order
+        // Queue display in the buffer
+        // Use shift=true so the most recent call is at the front of the queue
         displayResults: function(searcher, data) {
             var that = this;
             this.buffer(function(next) {
-                // Execute previous in buffer;
-                next();
                 // Refresh tweets collection with source data
                 var results = data ? data.results : [];
                 // Add to beginning of collection
                 App.Tweets.add(results, { at: 0 });
                 // Remove loading indicator
                 $(that.tweetsView.el).removeClass('loading');
-            });
+                // Only execute the most recent callback, remove the rest
+                that.clearBuffer();
+            }, { shift: true });
         },
 
         // When timer starts or stops, we want to show or hide the timer view respectively
