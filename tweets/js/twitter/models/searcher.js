@@ -22,8 +22,7 @@ define([
         },
 
         onQueryChange: function() {
-            // Initial query URL
-            // Once data returns, we can grab the "refresh_url" data for future tweets using the same query
+            // Query URL
             this.url = this.baseUrl + '?q=' + encodeURIComponent(this.get('query')) + '&callback=?';
             // Pull in data
             this.refresh();
@@ -55,8 +54,6 @@ define([
             // Event for those interested...
             this.trigger('ajax:after');
             this.set({ results: data });
-            // Use the URL provided by Twitter for subsequent fetches to same query
-            this.url = this.baseUrl + data.refresh_url + '&callback=?';
         }, 200)
     });
     return Search;

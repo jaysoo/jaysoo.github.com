@@ -16,20 +16,15 @@ define([
         template: Handlebars.compile(textTemplate),
 
         initialize: function() {
-            _.bindAll(this, 'render', 'addTweet');
+            _.bindAll(this, 'render');
             this.collection.bind('reset', this.render);
-            this.collection.bind('add', this.addTweet);
         }, 
 
         render: function() {
-            $(this.el).empty();
-            return this;
-        },
-
-        addTweet: function(tweet) {
-            $(this.el).prepend( this.template({
-                tweets: [tweet.toJSON()]
+            $(this.el).html( this.template({
+                tweets: this.collection.toJSON()
             }) );
+            return this;
         }
     });
     return TweetsView;

@@ -107,8 +107,7 @@ define([
             this.buffer(function(next) {
                 // Refresh tweets collection with source data
                 var results = data ? data.results : [];
-                // Add to beginning of collection
-                App.Tweets.add(results, { at: 0 });
+                App.Tweets.reset(results);
                 // Remove loading indicator
                 $(that.tweetsView.el).removeClass('loading');
                 // Only execute the most recent callback, remove the rest
