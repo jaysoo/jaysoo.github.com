@@ -49,13 +49,15 @@ define([
             $.getJSON(this.url, this.loadData);
         },
 
-        loadData: function(data) {
+        // Waits 500 ms before execution
+        // When called repeated, will only execute the last loadData
+        loadData: _.debounce(function(data) {
             // Event for those interested...
             this.trigger('ajax:after');
             this.set({ results: data });
             // Use the URL provided by Twitter for subsequent fetches to same query
             this.url = this.baseUrl + data.refresh_url + '&callback=?';
-        }
+        }, 500)
     });
     return Search;
 })
