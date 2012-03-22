@@ -46,8 +46,8 @@ define([
 
             // Setup handlers for events of interest
             App.Searcher.bind('ajax:before', this.showLoader);
-            App.Searcher.bind('ajax:after', this.clearResults);
             App.Searcher.bind('change:query', this.updateTimer);
+            App.Searcher.bind('change:results', this.clearResults);
             App.Searcher.bind('change:results', this.displayResults);
             App.Timer.bind('change:started', this.toggleTimer);
             App.Timer.bind('alarm', App.Searcher.refresh);
@@ -91,10 +91,11 @@ define([
             App.Timer.resetTime();
 
             // If query is empty/null then stop timer, else start timer
-            if (App.Searcher.get('query'))
+            if (App.Searcher.get('query')) {
                 App.Timer.start();
-            else
+            } else {
                 App.Timer.stop();
+            }
         },
 
         // debounce for some delay before displaying results
