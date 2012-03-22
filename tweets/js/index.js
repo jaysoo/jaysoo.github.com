@@ -6,6 +6,7 @@ require.config({
         underscore: 'libs/underscore/underscore-min',
         backbone: 'libs/backbone/backbone',
         localStorage: 'libs/backbone/localstorage',
+        moment: 'libs/moment/moment',
         text: 'libs/require/text',
         synapse: 'libs/synapse/synapse',
         'synapse/core': 'libs/synapse/synapse',

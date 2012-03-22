@@ -5,7 +5,8 @@ define([
         'handlebars',
         '../models/tweet',
         '../collections/tweets',
-        'text!templates/tweets.html'
+        'text!templates/tweets.html',
+        'handlebars-ext'
     ], function($, _, Backbone, Handlebars, Tweet, Tweets, textTemplate){
     var TweetsView = Backbone.View.extend({
 
