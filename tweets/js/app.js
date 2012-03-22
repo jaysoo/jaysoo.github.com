@@ -47,9 +47,9 @@ define([
 
             // Setup handlers for events of interest
             App.Searcher.bind('ajax:before', this.showLoader);
+            App.Searcher.bind('change:results', this.displayResults);
             App.Searcher.bind('change:query', this.updateTimer);
             App.Searcher.bind('change:query', this.clearResults);
-            App.Searcher.bind('change:results', this.displayResults);
             App.Timer.bind('change:started', this.toggleTimer);
             App.Timer.bind('alarm', App.Searcher.refresh);
 
@@ -97,22 +97,23 @@ define([
         clearResults: function() {
             this.clearBuffer();
             // Remove previous tweets
+            this.clearBuffer();
             App.Tweets.reset([]);
         },
 
-        // Queue display in the buffer
-        // Use shift=true so the most recent call is at the front of the queue
-        displayResults: function(searcher, data) {
-            var that = this;
+        // Queue display in the buffer so they will execute in proper order
+        displayResults: function() {
+            var that = this,
+                data = App.Searcher.get('results');
             this.buffer(function(next) {
+                // Do previous callback first to ensure proper order
+                next();
                 // Refresh tweets collection with source data
                 var results = data ? data.results : [];
                 App.Tweets.reset(results);
                 // Remove loading indicator
                 $(that.tweetsView.el).removeClass('loading');
-                // Only execute the most recent callback, remove the rest
-                that.clearBuffer();
-            }, { shift: true });
+            });
         },
 
         // When timer starts or stops, we want to show or hide the timer view respectively

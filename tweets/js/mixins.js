@@ -8,10 +8,9 @@ define([], function() {
             // Adds a command to the buffer, and executes it if it's
             // the only command to be ran.
             var that = this;
-            if (options.shift)
-                that.bufferQueue.unshift(fn);
-            else 
-                that.bufferQueue.push(fn);
+
+            that.bufferQueue.push(fn);
+
             if (that.bufferQueue.length == 1) fn(next);
 
             // Moves onto the next command in the buffer.
