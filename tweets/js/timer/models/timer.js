@@ -23,7 +23,7 @@ define([
     var Timer = Backbone.Model.extend({
         defaults: {
             started: false,
-            max: 30,
+            max: 15,
             time: 0
         },
 
