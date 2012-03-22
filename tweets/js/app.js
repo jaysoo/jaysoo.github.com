@@ -47,7 +47,7 @@ define([
             // Setup handlers for events of interest
             App.Searcher.bind('ajax:before', this.showLoader);
             App.Searcher.bind('change:query', this.updateTimer);
-            App.Searcher.bind('change:results', this.clearResults);
+            App.Searcher.bind('change:query', this.clearResults);
             App.Searcher.bind('change:results', this.displayResults);
             App.Timer.bind('change:started', this.toggleTimer);
             App.Timer.bind('alarm', App.Searcher.refresh);
