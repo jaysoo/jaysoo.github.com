@@ -153,7 +153,7 @@ $.ajax({
           <h3>Other problems with JavaScript</h3>
           <ul>
             <li>JavaScript in the browser has no module system</li>
-            <li>OOP in vanillaJS is not easy</li>
+            <li>OOP in VanillaJS is not easy</li>
           </ul>
         </section>
 
@@ -223,7 +223,7 @@ $.ajax({
 
           <section>
             <h3>Defining a module</h3>
-            <pre><code contenteditable>define('myModule', [
+            <pre class="code-large"><code contenteditable>define('myModule', [
   'jquery'], function ($) {
 
    return function(selector) {
@@ -235,7 +235,7 @@ $.ajax({
 
           <section>
             <h3>Loading a module</h3>
-            <pre><code contenteditable>require([
+            <pre class="code-large"><code contenteditable>require([
   'mymodule', function(MyModule) {
 
   MyModule('#myDiv').css('background-color', 'red');
@@ -289,12 +289,12 @@ $.ajax({
 
         <section>
           <h2>Part 2</h2>
-          <h3 class="inverted">Backbone.js</h3>
+          <h3 class="inverted">Backbone</h3>
         </section>
 
         <section>
           <section>
-            <h3>Overview of Backbone.js</h3>
+            <h3>Overview of Backbone</h3>
             <ul>
               <li>Very lightweight</li>
               <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
@@ -315,24 +315,27 @@ $.ajax({
         </section>
 
         <section>
-          <h3>MV* in Backbone.js</h3>
+          <h3>MV* in Backbone</h3>
           <dl>
             <dt>Model</dt>
             <dd>Same as model in MVC</dd>
-            <dt>Template<dt>
-            <dd>Same as view in MVC</dd>
             <dt>View</dt>
             <dd>Similar to Controller in Smalltalk-80's MVC</dd>
             <dd>Takes in model and renders view</dd>
             <dd>Handles user interaction with view to update model</dd>
             <dd>Observes changes on model to update view</dd>
+            <dt>Template<dt>
+            <dd>Same as view in MVC</dd>
           </dl>
         </section>
 
         <section>
           <section>
-            <h3>OOP using Backbone.js</h3>
-            <p>Provides function to properly setup prototypical inhertiance</p>
+            <h3>Model</h3>
+            <ul>
+              <li>Extend from Backbone.Model</li>
+              <li>Prototype chain is setup properly for you</li>
+            </ul>
             <pre class="code-large"><code contenteditable>var Animal = Backbone.Model.extend({
   says: function() { return '?'; }
 });
@@ -350,7 +353,7 @@ cat.constructor.__super__.says.call(this); //--&gt; '?'</code></pre>
           </section>
 
           <section>
-            <h3>Inheritance in pure JavaScript</h3>
+            <h3>Inheritance in VanillaJS</h3>
             <pre class="code-large"><code contenteditable>var Animal = function() {};
 Animal.prototype.says = function() { return '?'; };
 
@@ -370,8 +373,94 @@ cat.constructor.__super__.says.call(cat); //--&gt; '?'</code></pre>
         </section>
 
         <section>
+          <h3>Collection</h3>
+          <p>A collection is a collection of models</p>
+          <pre class="code-large"><code contenteditable>var MyModel = Backbone.Model.extend({ });
+var MyModelCollection = Backbone.Collection.extend({
+model: MyModel
+});</code></pre>
+        </section>
+
+        <section>
+          <h3>View and template</h3>
+          <ul>
+            <li>View handles user interaction</li>
+            <li>View handles updates to model or collection</li>
+            <li>View updates UI based on changes to model or collection</li>
+            <li>Template renders data as an UI element</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>View</h3>
+          <ul>
+            <li>A view is often associated with a model or collection, but not always</li>
+            <li>Uses templates in its <code>render</code> function to render its UI element</li>
+          </ul>
+          <pre class="code-large"><code contenteditable>
+var MyView = Backbone.View.extend({
+  // Compiles Underscore template for later use
+  template: _.template('<p><%= message %></p>'),
+
+  render: function() {
+    // Render the Underscore template
+    $(this.el).html( this.template({ message: 'Hello World!'}) );
+    return this;
+  }
+});
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Template</h3>
+          <p>Backbone does restrict your choices of templates.</p>
+          <p>You can use any templating language you want.</p>
+          <ul class="fragment">
+            <li>_.template</li>
+            <li>Mustache</li>
+            <li>Handlebars</li>
+            <li>jQuery template</li>
+            <li>dust.js</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Handlebars</h3>
+          <ul>
+            <li>Extension of the Mustache templating language</li>
+            <li>Supports limited logic in the templates layer</li>
+            <li>Supports user-defined helper functions for generating HTML</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Using templates in Backbone</h3>
+          <p>Templates are used in the views to render data.</p>
+
+          <pre ><code contenteditable>&lt;!-- HTML --&gt;
+&lt;div id="myDiv"&gt;&lt;/div&gt;</code></pre>
+          <pre ><code contenteditable>/* JavaScript */
+var Person = Backbone.Model.extend({ });
+
+var PersonView = Backbone.View.extend({
+template: Handlebars.compile('<p>Hello {{firstName}} {{lastName}}</p>'),
+
+render: function() {
+  $(this.el).html( this.template(this.model.toJSON()) );
+  return this;
+}
+});
+
+var john = new Person({ firstName: 'John', lastName: 'Smith' });
+var view = new PersonView({ 
+el: $('#myDiv'),
+model: john
+});</code></pre>
+        </section>
+
+        <section>
           <h3>Code reuse using mixins</h3>
-          <p>A mixin defined attributes and functions that can be shared across differetn classes.</p>
+          <p>A mixin defines attributes and functions that can be shared across different classes.</p>
           <pre class="code-large"><code contenteditable>var Mixins = {};
 
 Mixins.Navigation = {
@@ -387,8 +476,6 @@ var menu = new Menu();
 menu.toggle();</code></pre>
         </section>
 
-        <section>
-        </section>
         
         <section>
           <h1>THE END</h1>
