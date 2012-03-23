@@ -397,8 +397,7 @@ model: MyModel
             <li>A view is often associated with a model or collection, but not always</li>
             <li>Uses templates in its <code>render</code> function to render its UI element</li>
           </ul>
-          <pre class="code-large"><code contenteditable>
-var MyView = Backbone.View.extend({
+          <pre><code contenteditable>var MyView = Backbone.View.extend({
   // Compiles Underscore template for later use
   template: _.template('<p><%= message %></p>'),
 
@@ -453,8 +452,8 @@ render: function() {
 
 var john = new Person({ firstName: 'John', lastName: 'Smith' });
 var view = new PersonView({ 
-el: $('#myDiv'),
-model: john
+  el: $('#myDiv'),
+  model: john
 });</code></pre>
         </section>
 
@@ -476,6 +475,10 @@ var menu = new Menu();
 menu.toggle();</code></pre>
         </section>
 
+        <section>
+          <h2>Part 3</h2>
+          <h3>Demo</h3>
+        </section>
         
         <section>
           <h1>THE END</h1>
