@@ -18,7 +18,7 @@
 
     <style>
       ul, ol {
-        margin-left: 40px;
+        padding-left: 40px !important;
       }
       dl {
         text-align: left;
@@ -170,7 +170,7 @@ $.ajax({
           <h3>The Module Pattern</h3>
           <p>Two options:</p>
           <ol>
-            <li>Roll your own module system <span class="fragment">&check;</span></li>
+            <li>Roll your own module system</li>
             <li>Use an AMD framework such as <a href="http://requirejs.org/">RequireJS</a></li>
           </ol>
         </section>
@@ -210,22 +210,58 @@ $.ajax({
           </section>
         </section>
 
+        <section>
+          <section>
+            <h3>RequireJS</h3>
+            <ul>
+              <li>Asynchronous module definition (AMD)</li>
+              <li>Directly supported in the browser</li>
+              <li>An improvement over <code>&lt;script&gt;</code> tags and implicit dependencies</li>
+              <li>Manage modules and dependencies all in JavaScript</li>
+            </ul>
+          </section>
 
-      <section>
+          <section>
+            <h3>Defining a module</h3>
+            <pre><code contenteditable>define('myModule', [
+  'jquery'], function ($) {
+
+   return function(selector) {
+    return $(selector);
+  }
+
+}); </code></pre>
+          </section>
+
+          <section>
+            <h3>Loading a module</h3>
+            <pre><code contenteditable>require([
+  'mymodule', function(MyModule) {
+
+  MyModule('#myDiv').css('background-color', 'red');
+
+});</code></pre>
+          </section>
+        </section>
+
+        <section>
           <section>
             <h3>The MVC Pattern</h3>
             <ul>
               <li>MVC is the most common structural pattern for the web</li>
-              <li>Many MVC frameworks out there:</li>
-              <li class="fragment">Ruby On Rails (Ruby)</li>
-              <li class="fragment">Django (Python)</li>
-              <li class="fragment">Spring MVC (Java)</li>
+              <li>Many MVC frameworks out there:
+                <ul>
+                  <li class="fragment">Ruby On Rails (Ruby)</li>
+                  <li class="fragment">Django (Python)</li>
+                  <li class="fragment">Spring MVC (Java)</li>
+                </ul>
+              </li>
             </ul>
           </section>
 
           <section>
             <h3>Overview of MVC</h3>
-            <img class="full-image" src="img/mvc.png">
+            <img class="full-image" src="assets/img/mvc.png">
           </section>
 
           <section>
