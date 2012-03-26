@@ -67,7 +67,6 @@
           <ul>
             <li>JavaScript apps have come a long way from AJAX and DHTML</li>
             <li>No longer used only for website enhancements</li>
-            <li>Web devs doing more and more work in the browser</li>
             <li>Large-scale apps require better architecture for scalability and maintainability</li>
           </ul>
         </section>
@@ -83,10 +82,10 @@
         </section>
       
         <section>
-          <h3>Let's about talk jQuery</h3>
+          <h3>What about jQuery?</h3>
           <ul>
             <li>jQuery is ubiquitous in JavaScript development.</li>
-            <li>Excellent for DOM manupilation!</li>
+            <li>Excellent for DOM manupilation and AJAX</li>
             <li class="fragment">But, it's only one small piece of a large puzzle</li>
             <li class="fragment">If you build your entire application using only jQuery there will (often) be problems</li>
             <li class="fragment">Don't believe me?</li>
@@ -226,7 +225,7 @@ $.ajax({
           </section>
 
           <section>
-            <h3>Defining a module</h3>
+            <h3>RequireJS: Defining a module</h3>
             <pre class="code-large"><code contenteditable>define('myModule', ['jquery'], function ($) {
    return function(selector) {
     return $(selector);
@@ -235,7 +234,7 @@ $.ajax({
           </section>
 
           <section>
-            <h3>Loading a module</h3>
+            <h3>RequireJS: Loading a module</h3>
             <pre class="code-large"><code contenteditable>require(['mymodule'], function(MyModule) {
 
   MyModule('#myDiv').css('background-color', 'red');
@@ -415,7 +414,7 @@ model: MyModel
           <p>Backbone does restrict your choices of templates.</p>
           <p>You can use any templating language you want.</p>
           <ul class="fragment">
-            <li>_.template</li>
+            <li>Underscore template</li>
             <li>Mustache</li>
             <li>Handlebars</li>
             <li>jQuery template</li>
