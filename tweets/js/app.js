@@ -5,7 +5,6 @@ define([
         'jquery',
         'underscore', 
         'backbone',
-        'handlebars',
         'synapse',
         'synapse/hooks/object',
         'synapse/hooks/jquery',
@@ -17,7 +16,7 @@ define([
         'twitter/views/searcherview',
         'timer/models/timer',
         'timer/views/timerview'
-    ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
+    ], function($, _, Backbone, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
         Mixins, Tweets, Searcher, TweetsView, SearcherView, Timer, TimerView) {
 
     // For data-binding support between Backbone and jQuery objects
@@ -87,17 +86,15 @@ define([
             App.Timer.resetTime();
 
             // If query is empty/null then stop timer, else start timer
-            if (App.Searcher.get('query')) {
+            if (App.Searcher.get('query'))
                 App.Timer.start();
-            } else {
+            else
                 App.Timer.stop();
-            }
         },
 
         clearResults: function() {
             this.clearBuffer();
             // Remove previous tweets
-            this.clearBuffer();
             App.Tweets.reset([]);
         },
 
@@ -108,9 +105,11 @@ define([
             this.buffer(function(next) {
                 // Do previous callback first to ensure proper order
                 next();
+                
                 // Refresh tweets collection with source data
                 var results = data ? data.results : [];
                 App.Tweets.reset(results);
+                
                 // Remove loading indicator
                 $(that.tweetsView.el).removeClass('loading');
             });
@@ -128,5 +127,6 @@ define([
 
     // Create AppView and return the App namespace
     App.View = new AppView();
+    
     return App;
 });

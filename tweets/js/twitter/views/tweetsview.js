@@ -3,11 +3,9 @@ define([
         'underscore', 
         'backbone',
         'handlebars',
-        '../models/tweet',
-        '../collections/tweets',
         'text!templates/tweets.html',
         'handlebars-ext'
-    ], function($, _, Backbone, Handlebars, Tweet, Tweets, textTemplate){
+    ], function($, _, Backbone, Handlebars, textTemplate){
     var TweetsView = Backbone.View.extend({
 
         tagName: 'ul',

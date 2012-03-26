@@ -3,17 +3,12 @@
  * and the Searcher's query attribute.
  */
 define([
-        'jquery',
-        'underscore', 
         'backbone',
-        'handlebars',
         'synapse',
         'synapse/hooks/object',
         'synapse/hooks/jquery',
-        'synapse/hooks/backbone-model',
-        'twitter/models/searcher',
-    ], function($, _, Backbone, Handlebars, Synapse, ObjectHook, jQueryHook, BackboneModelHook, 
-        Searcher) {
+        'synapse/hooks/backbone-model'
+    ], function(Backbone, Synapse, ObjectHook, jQueryHook, BackboneModelHook) {
 
     // Add additional hooks to Synapse for data-binds between Backbone model and jQuery object
     Synapse.addHooks(jQueryHook, BackboneModelHook, ObjectHook);
@@ -43,6 +38,7 @@ define([
             this.$queryInput.focus();
         }
     });
+    
     return SearcherView;
 });
 
