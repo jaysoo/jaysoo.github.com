@@ -7,7 +7,7 @@ define([
         'backbone'
     ], function($, _, Backbone) {
     var Search = Backbone.Model.extend({
-        baseUrl: 'http://search.twitter.com/search.json',
+        searchUrl: 'http://search.twitter.com/search.json',
 
         defaults: {
             query: null,
@@ -16,14 +16,12 @@ define([
 
         initialize: function() {
             _.bindAll(this, 'onQueryChange', 'refresh', 'loadData');
-
-            // Refresh results when query changes
             this.bind('change:query', this.onQueryChange);
         },
 
         onQueryChange: function() {
             // Query URL
-            this.url = this.baseUrl + '?q=' + encodeURIComponent(this.get('query')) + '&callback=?';
+            this.url = this.searchUrl + '?q=' + encodeURIComponent(this.get('query')) + '&callback=?';
             // Pull in data
             this.refresh();
         },
@@ -37,9 +35,6 @@ define([
               this.set({ results: null });
               return;
             }
-
-            var that = this,
-                data = this.get('results');
 
             // Event for those interested...
             this.trigger('ajax:before');

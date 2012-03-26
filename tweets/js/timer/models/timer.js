@@ -53,11 +53,10 @@ define([
         },
 
         countDown: function() {
-            var prevTime = this.get('time');
-            this.set({ time: prevTime - 1 });
+            this.set({ time: this.get('time') - 1 });
             if (this.get('time') === 0) {
                 this.trigger('alarm');
-                this.set({ time: this.get('max') });
+                this.resetTime();
             }
         }
     });
