@@ -43,6 +43,9 @@
         font-size: 24px;
         line-height: 32px;
       }
+      .overlay {
+        background-color: rgba(0, 0, 0, 0.4);
+      }
     </style>
   </head>
   
@@ -65,14 +68,14 @@
         <section>
           <h3>For the uninitiated</h3>
           <ul>
-            <li>JavaScript apps have come a long way from AJAX and DHTML</li>
+            <li>JavaScript apps have come a long way from DHTML and AJAX</li>
             <li>No longer used only for website enhancements</li>
             <li>Large-scale apps require better architecture for scalability and maintainability</li>
           </ul>
         </section>
 
         <section>
-          <h3>What is a large-scale JavaScript app?</h3>
+          <h3>Large-scale JavaScript app?</h3>
           <ul>
             <li>Browser handles most of the user interaction</li>
             <li>Most of the data manipulation is in the browser</li>
@@ -84,84 +87,63 @@
         <section>
           <h3>What about jQuery?</h3>
           <ul>
-            <li>jQuery is ubiquitous in JavaScript development.</li>
             <li>Excellent for DOM manupilation and AJAX</li>
             <li class="fragment">But, it's only one small piece of a large puzzle</li>
             <li class="fragment">If you build your entire application using only jQuery there will (often) be problems</li>
-            <li class="fragment">Don't believe me?</li>
           </ul>
         </section>
 
         <section>
-          <section>
-            <h3>Spaghetti code</h3>
-            <p>How often do you end up with something like this?</p>
-            <pre><code contenteditable>var $content = $('#content');
-$.ajax({
-  url: '/api/people/',
-  success: function(people) {
-    var $ul = $('&lt;ul/&gt;');
-    for (var i = 0; i &lt; people.length; i++) {
-      var person = people[i];
-      $ul.append(
-        '&lt;li&gt;' + person + '&lt;/li&gt;'
-      );
-    }
-    $content.append($ul);
-  }
-});</code></pre>
+          <section style="background-image:url(assets/img/spaghetti.jpg); background-size: 100%">
+            <h3 class="overlay">What problems?</h3>
           </section>
 
           <section>
-            <p>How about this?</p>
-            <pre><code contenteditable>var $content = $('#content');
+            <h3>Spaghetti code</h3>
+            <pre><code contenteditable>/* Navigating photos */
+var $ajaxLoader = $('#ajax-loader'),
+    $photo = $('#photo');
 
-// Load one person
-$.ajax({
-  url: '/api/people/jack',
-  success: function(me) {
-    var $friends = $('&lt;ul class="friends"/&gt;).appendTo($content);
+$('#next').click(function() {
+  var nextId = $photo.data('nextId');
 
-    // Display some info for me
-    $content.append(
-      '&lt;p&gt;' + me.name + ' has ' + me.friends.length + ' friends&lt;/p&gt;'
-    );
+  $photo.slideUp('fast', function() {
+    $ajaxLoader.show();
+    $.ajax({
+      url: '/photo/' + nextId,
+      success: function(data) {
+        $photo
+          .attr('src', data.source) // data:image/gif;base64,...
+          .data('nextId', data.nextId || null)
+          .slideDown('fast', function() {
+            $ajaxLoader.hide();
+          }); // slideDown
+      },
+      error: function() {
+        // handle error
+        // ...
+      }
+    }) //ajax;
 
-    // Load all my friends
-    for (var i = 0; i &lt; me.friends; i++) {
-      $.ajax({
-        url: '/api/people/' + friend,
-        success: function(friend) {
-          // Display info for friends
-          $friends.append('&lt;li&gt;' + friend.name + '&lt;/li&gt;);
-        }
-      });
-    }
-  }
-});</code></pre>
+  }); // slideUp
+
+}); // click</code></pre>
           </section>
 
         </section>
-        
+
         <section>
           <h3>jQuery-only does not scale <s>well</s> easily</h3>
           <ul>
-            <li>Code organization:
-              <ul>
-                <li>JavaScript in the browser has no module system</li>
-                <li>Events and callbacks can quickly become unmanageable</li>
-              </ul>
-            </li>
-            <li>Coupling:
-              <ul>
-                <li>No separation of concerns between data and presentation</li>
-              </ul>
-            </li>
+              <li>JavaScript in the browser has no module system</li>
+              <li>Events and callbacks can quickly become unmanageable</li>
+              <li>No separation of concerns between data and presentation</li>
+              <li>...</li>
           </ul>
         </section>
 
         <section>
-          <h3>Addressing the problems</h3>
+          <h3>Solutions</h3>
           <p>Two patterns that will help</p>
           <ul>
             <li>Module pattern</li>
@@ -170,11 +152,24 @@ $.ajax({
         </section>
 
         <section>
-          <h3>The Module Pattern</h3>
-          <p>Two options:</p>
+          <h2>Modular JavaScript</h2>
+          <img src="assets/img/gears.png" alt="">
+        </section>
+
+        <section>
+          <h3>Modules?</h3>
+          <ul>
+            <li>A module contains definitions of JavaScript functions and statements</li>
+            <li>May incorporate privacy in the module declaration</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>How?</h3>
           <ol>
             <li>Roll your own module system</li>
             <li>Use an AMD framework such as <a href="http://requirejs.org/">RequireJS</a></li>
+            <li class="fragment"><s>ECMAScript Harmony</s></li>
           </ol>
         </section>
 
@@ -195,11 +190,13 @@ $.ajax({
             <h3>Defining a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
   // Private stuff
-  /* ... */
+  function getMessage() {
+    return 'Hello World!';
+  }
 
   // Public stuff
   Foo.BarModel = function() {
-    this.message = 'Hello World!';
+    this.message = getMessage();
   };
 })( module('foo') );</code></pre>
           </section>
@@ -207,20 +204,41 @@ $.ajax({
           <section>
             <h3>Loading a module</h3>
             <pre class="code-large"><code contenteditable>(function(Foo) {
+
   var bar = new Foo.BarModel();
+
   alert( bar.message ); //--> 'Hello World!'
+
 })( module('foo') );</code></pre>
           </section>
         </section>
 
         <section>
+          <h3>AMD</h3>
+          <p>Asynchronous Module Definition</p>
+          <ul class="fragment">
+            <li>Mechanism for asynchronously defining loadable modules</li>
+            <li>Non-blocking, parallel loading of modules</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Why AMD?</h3>
+          <ul>
+            <li>Well-defined modules and dependencies</li>
+            <li>Improvement over <code>&lt;script&gt;</code> tags and implicit dependencies</li>
+            <li>Directly supported in the browser (unlike CommonJS)</li>
+            <li>Stepping stone to ES Harmony</li>
+          </ul>
+        </section>
+
+        <section>
           <section>
-            <h3>AMD: RequireJS</h3>
+            <h3>RequireJS</h3>
             <ul>
-              <li>Improvement over <code>&lt;script&gt;</code> tags and implicit dependencies</li>
-              <li>Directly supported in the browser (no build tools needed)</li>
-              <li>Manage modules and dependencies in JavaScript</li>
-              <li>Optimizations supported if needed (r.js in Node or Rhino)</li>
+              <li>Supports nested and circular dependencies</li>
+              <li>Optimizations available</li>
+              <li>Asynchronous template loading</li>
             </ul>
           </section>
 
@@ -244,73 +262,112 @@ $.ajax({
         </section>
 
         <section>
-          <section>
-            <h3>The MVC Pattern</h3>
-            <ul>
-              <li>MVC is the most common structural pattern for the web</li>
-              <li>Many MVC frameworks out there:
-                <ul>
-                  <li class="fragment">Ruby On Rails (Ruby)</li>
-                  <li class="fragment">Django (Python)</li>
-                  <li class="fragment">Spring MVC (Java)</li>
-                </ul>
-              </li>
-            </ul>
-          </section>
+          <h3>Nested dependencies</h3>
+          <pre class="code-large"><code>define('myModule', ['jquery'], function($) {
+  return {
+    doSomething: function() {
+      require(['something'], function(Something) {
+        Something.do();
+      });
+    },
+    /* ... */
+  };
+});</code></pre>
+        </section>
 
-          <section>
-            <h3>Overview of MVC</h3>
-            <img class="full-image" src="assets/img/mvc.png">
-          </section>
+        <section>
+          <h3>Circular dependencies</h3>
+          <pre class=""><code>define('Employee', ['exports', 'company'], function(exports, Company) {
+  function Employee(name) {
+    this.name = name;
+    this.company = new Company.Company(name + "'s Company");
+  }
+  exports.Employee = Employee;
+});
+          
+define('Company', ['exports', 'company'], function(exports, Employee) {
+  function Company(name) {
+    this.name = this;
+    this.employees = [];
+  }
+  Company.prototype.addEmployee = function(name) {
+    var employee = new Employee.Employee(name);
+    this.employees.push(employee);
+    employee.company = this;
+  };
+  exports.Company = Company;
+});</code></pre>
+        </section>
 
-          <section>
-            <h3>Model, View, Controller</h3>
-            <dl>
-              <dt>Model<dt>
-              <dd>Manages data</dd>
-              <dt>View</dt>
-              <dd>Renders the model into a form suitable for interaction (UI)</dd>
-              <dt>Controller</dt>
-              <dd>Receives user inputs and performs actions on model accordingly</dd>
-            </dl>
-          </section>
+        <section>
+          <h3>External templates</h3>
+          <pre class="code-large"><code>define('myModule', [
+    'underscore',
+    'text!myTemplate'
+  ], function(_, myTemplate) {
 
-          <section>
-            <h3>MV* Patterns</h3>
-            <ul>
-              <li>Many frameworks are not strict MVC, but a different flavour of it</li>
-              <li class="fragment">MVP: Replaces Controller with Presenter, and further separates Model from View</li>
-              <li class="fragment">MVVM: Replaces Controller with View-Model -- an abstraction of the View that provides data binding between Model and View</li>
-              <li class="fragment">MV* is used to describe these flavours of MVC</li>
+  // Underscore template
+  return _.template(myTemplate);
+
+});</code></pre>
+        </section>
+
+        <section>
+          <h2>MVC Pattern</h2>
+          <img class="full-image" src="assets/img/mvc.png">
+        </section>
+
+        <section>
+          <h3>MVC</h3>
+          <ul>
+            <li>MVC is the most common structural pattern for the web</li>
+            <li>Many MVC frameworks out there:
+              <ul>
+                <li class="fragment">Ruby On Rails (Ruby)</li>
+                <li class="fragment">Django (Python)</li>
+                <li class="fragment">Spring MVC (Java)</li>
+              </ul>
+            </li>
           </ul>
-          </section>
         </section>
 
         <section>
-          <h2>Part 2</h2>
-          <h3 class="inverted">Backbone</h3>
+          <h3>Model, View, Controller</h3>
+          <dl>
+            <dt>Model<dt>
+            <dd>Manages data</dd>
+            <dt>View</dt>
+            <dd>Renders the model into a form suitable for interaction (UI)</dd>
+            <dt>Controller</dt>
+            <dd>Receives user inputs and performs actions on model accordingly</dd>
+          </dl>
         </section>
 
         <section>
-          <section>
-            <h3>Overview of Backbone</h3>
-            <ul>
-              <li>Very lightweight</li>
-              <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
-              <li>Uses MV* pattern</li>
-              <li>Very close to Smalltalk-80's MVC pattern</li>
-            </ul>
-          </section>
+          <h3>MV* Patterns</h3>
+          <ul>
+            <li>Many frameworks are not strict MVC, but a different flavour of it</li>
+            <li class="fragment">MVP: Replaces Controller with Presenter, and further separates Model from View</li>
+            <li class="fragment">MVVM: Replaces Controller with View-Model -- an abstraction of the View that provides data binding between Model and View</li>
+            <li class="fragment">MV* is used to describe these flavours of MVC</li>
+          </ul>
+        </section>
 
-          <section>
-            <h3>Smalltalk-80 MVC</h3>
-            <ul>
-              <li>Model is completely ignorant of the UI</li>
-              <li>A View-Controller pair required presentation</li>
-              <li>Controller handles user interaction and performing actions based on them</li>
-              <li>Observer pattern used for update the View whenever the Model changes</li>
-            </ul>
-          </section>
+        <section>
+          <h1>Part 2</h1>
+          <h2 class="inverted">
+            <img src="assets/img/backbone.png" alt="Backbone">
+          </h2>
+        </section>
+
+        <section>
+          <h3>Overview of Backbone</h3>
+          <ul>
+            <li>Very lightweight</li>
+            <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
+            <li>Uses MV* pattern</li>
+            <li>Very close to Smalltalk-80's MVC pattern</li>
+          </ul>
         </section>
 
         <section>
@@ -326,6 +383,16 @@ $.ajax({
             <dt>Template<dt>
             <dd>Same as view in MVC</dd>
           </dl>
+        </section>
+
+        <section>
+          <h3>Four main things</h3>
+          <ol>
+            <li>Model</li>
+            <li>Collection</li>
+            <li>View</li>
+            <li>Router</li>
+          </ol>
         </section>
 
         <section>
@@ -438,15 +505,15 @@ model: MyModel
           <pre ><code contenteditable>&lt;!-- HTML --&gt;
 &lt;div id="myDiv"&gt;&lt;/div&gt;</code></pre>
           <pre ><code contenteditable>/* JavaScript */
-var Person = Backbone.Model.extend({ });
+var Person = Backbone.Model.extend({});
 
 var PersonView = Backbone.View.extend({
-template: Handlebars.compile('<p>Hello {{firstName}} {{lastName}}</p>'),
-
-render: function() {
-  $(this.el).html( this.template(this.model.toJSON()) );
-  return this;
-}
+  template: Handlebars.compile('&lt;p&lt;Hello {{firstName}} {{lastName}}&lt;/p&gt;'),
+  
+  render: function() {
+    $(this.el).html( this.template(this.model.toJSON()) );
+    return this;
+  }
 });
 
 var john = new Person({ firstName: 'John', lastName: 'Smith' });
@@ -475,8 +542,8 @@ menu.toggle();</code></pre>
         </section>
 
         <section>
-          <h2>Part 3</h2>
-          <h3>Let's build an app</h3>
+          <h1>Part 3</h1>
+          <h2 class="inverted">Let's build an app</h2>
         </section>
 
         <section>
