@@ -470,7 +470,7 @@ model: MyModel
           </ul>
           <pre><code contenteditable>var MyView = Backbone.View.extend({
   // Compiles Underscore template for later use
-  template: _.template('<p>&lt;%= message %&gt;</p>'),
+  template: _.template('&lt;p&gt;&lt;%= message %&gt;&lt;/p&gt;'),
 
   render: function() {
     // Render the Underscore template
