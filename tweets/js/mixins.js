@@ -1,1 +1,1 @@
-define([],function(){var a={};return a.Buffer={bufferQueue:[],buffer:function(a,b){function d(){c.bufferQueue.shift(),c.bufferQueue.length&&c.bufferQueue[0](d)}b=b||{};var c=this;c.bufferQueue.push(a),c.bufferQueue.length==1&&a(d)},clearBuffer:function(){this.bufferQueue=[]}},a})
+define([],function(){var a={};return a.Buffer={bufferQueue:[],buffer:function(a,b){function c(){d.bufferQueue.shift(),d.bufferQueue.length&&d.bufferQueue[0](c)}b=b||{};var d=this;d.bufferQueue.push(a),d.bufferQueue.length==1&&a(c)},clearBuffer:function(){this.bufferQueue=[]}},a})
