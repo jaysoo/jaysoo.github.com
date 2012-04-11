@@ -1,0 +1,1 @@
+define([],function(){var a={};return a.Buffer={bufferQueue:[],buffer:function(a,b){function d(){c.bufferQueue.shift(),c.bufferQueue.length&&c.bufferQueue[0](d)}b=b||{};var c=this;c.bufferQueue.push(a),c.bufferQueue.length==1&&a(d)},clearBuffer:function(){this.bufferQueue=[]}},a})

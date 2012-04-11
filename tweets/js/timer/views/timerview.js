@@ -1,0 +1,1 @@
+define(["jquery","underscore","backbone"],function(a,b,c){var d=c.View.extend({tagName:"p",className:"timer",initialize:function(){b.bindAll(this,"render"),this.model.bind("all",this.render)},render:function(){var b=this.$("time"),c=this.model.get("time");b?b.html(c):a(this.el).html(c)}});return d})

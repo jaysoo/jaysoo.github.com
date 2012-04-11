@@ -1,0 +1,1 @@
+define(["handlebars","moment"],function(a,b){a.registerHelper("naturalday",function(a,c){try{return c=c||"MMM dd, yyyy",b(new Date(a)).fromNow()}catch(d){return a}})})
