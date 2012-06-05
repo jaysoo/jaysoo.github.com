@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     
-    <title>Building Large-Scale JavaSript Applications</title>
+    <title>Scaling JavaScript Applications / Future of Wave Front-End</title>
 
-    <meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
-    <meta name="author" content="Hakim El Hattab">
+    <meta name="description" content="Backbone.js, RequireJS and CoffeeScript">
+    <meta name="author" content="Jack Hsu">
     
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     
@@ -56,8 +56,8 @@
       <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
         <section>
-          <h1>Backbone.js</h1>
-          <h3 class="inverted">Building Large-Scale JavaScript Applications</h3>
+          <h1>Scaling JavaScript Applications</h1>
+          <h3 class="inverted">The future of Wave front-end</h3>
           <script>
             // Delicously hacky. Look away.
             if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
@@ -66,550 +66,58 @@
         </section>
 
         <section>
-          <h3>For the uninitiated</h3>
-          <ul>
-            <li>JavaScript apps have come a long way from DHTML and AJAX</li>
-            <li>No longer used only for website enhancements</li>
-            <li>Large-scale apps require better architecture for scalability and maintainability</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Large-scale JavaScript app?</h3>
-          <ul>
-            <li>Browser handles most of the user interaction</li>
-            <li>Most of the data manipulation is in the browser</li>
-            <li>Commonly built as single-page apps</li>
-            <li>Requires significant development effort to maintain</li>
-          </ul>
-        </section>
-      
-        <section>
-          <h3>What about jQuery?</h3>
-          <ul>
-            <li>Excellent for DOM manupilation and AJAX</li>
-            <li class="fragment">But, it's only one small piece of a large puzzle</li>
-            <li class="fragment">If you build your entire application using only jQuery there will (often) be problems</li>
-          </ul>
-        </section>
-
-        <section>
           <section style="background-image:url(assets/img/spaghetti.jpg); background-size: 100%">
-            <h3 class="overlay">What problems?</h3>
-          </section>
-
-          <section>
-            <h3>Spaghetti code</h3>
-            <pre><code contenteditable>/* Navigating photos */
-var $ajaxLoader = $('#ajax-loader'),
-    $photo = $('#photo');
-
-$('#next').click(function() {
-  var nextId = $photo.data('nextId');
-
-  $photo.slideUp('fast', function() {
-    $ajaxLoader.show();
-    $.ajax({
-      url: '/photo/' + nextId,
-      success: function(data) {
-        $photo
-          .attr('src', data.source) // data:image/gif;base64,...
-          .data('nextId', data.nextId || null)
-          .slideDown('fast', function() {
-            $ajaxLoader.hide();
-          }); // slideDown
-      },
-      error: function() {
-        // handle error
-      }
-    }) //ajax;
-  }); // slideUp
-}); // click</code></pre>
+            <h3 class="overlay">Current Wave Accounting front-end</h3>
           </section>
 
           <section>
             <h3>Spaghetti</h3>
             <ul>
-              <li>Looks good from the outside</li>
-              <li>Tastes nice</li>
-              <li><strong>A mess to clean up</strong></li>
+              <li class="fragment">Looks good from the outside</li>
+              <li class="fragment">Tastes nice</li>
+              <li class="fragment">A mess to clean up</li>
             </ul>
           </section>
-
         </section>
 
         <section>
-          <h3>Problem boils down to</h3>
-          <p>Lack of <strong>structure</strong> and <strong>organization</strong></p>
-        </section>
-
-        <section>
-          <h3>Solutions</h3>
-          <p>Two patterns that will help</p>
+          <h3>The issues</h3>
           <ul>
-            <li>Module pattern</li>
-            <li>MVC / MV* pattern</li>
+            <li>Code quality</li>
+            <li>Lack of structure and organization</li>
+            <li>Lack of testing</li>
           </ul>
         </section>
 
         <section>
-          <h2>Modular JavaScript</h2>
-          <img src="assets/img/gears.png" alt="">
-        </section>
-
-        <section>
-          <h3>Modules?</h3>
+          <h3>Prevents us from...</h3>
           <ul>
-            <li>A module contains definitions of JavaScript functions and statements</li>
-            <li>May incorporate privacy in the module declaration</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>How?</h3>
-          <ol>
-            <li>Roll your own module system</li>
-            <li>Use an AMD framework such as <a href="http://requirejs.org/">RequireJS</a></li>
-            <li class="fragment"><s>ECMAScript Harmony</s></li>
-          </ol>
-        </section>
-
-        <section>
-          <section>
-            <h3>A simple module system</h3>
-            <pre class="code-large"><code contenteditable>var module = (function() {
-  var modules = {};
-  return function(name) {
-    if (name in modules)
-      return modules[name];
-    return ( modules[name] = {} );
-  };
-})();</code></pre>
-          </section>
-
-          <section>
-            <h3>Defining a module</h3>
-            <pre class="code-large"><code contenteditable>(function(Foo) {
-  // Private stuff
-  function getMessage() {
-    return 'Hello World!';
-  }
-
-  // Public stuff
-  Foo.BarModel = function() {
-    this.message = getMessage();
-  };
-})( module('foo') );</code></pre>
-          </section>
-
-          <section>
-            <h3>Loading a module</h3>
-            <pre class="code-large"><code contenteditable>(function(Foo) {
-
-  var bar = new Foo.BarModel();
-
-  alert( bar.message ); //--> 'Hello World!'
-
-})( module('foo') );</code></pre>
-          </section>
-        </section>
-
-        <section>
-          <h3>AMD</h3>
-          <p>Asynchronous Module Definition</p>
-          <ul class="fragment">
-            <li>Mechanism for asynchronously defining loadable modules</li>
-            <li>Non-blocking, parallel loading of modules</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Why AMD?</h3>
-          <ul>
-            <li>Well-defined modules and dependencies</li>
-            <li>Improvement over <code>&lt;script&gt;</code> tags and implicit dependencies</li>
-            <li>Directly supported in the browser (unlike CommonJS)</li>
-            <li>Stepping stone to ES Harmony</li>
-          </ul>
-        </section>
-
-        <section>
-          <section>
-            <h3>RequireJS</h3>
-            <ul>
-              <li>Supports nested and circular dependencies</li>
-              <li>Optimizations available</li>
-              <li>Asynchronous template loading</li>
-            </ul>
-          </section>
-
-          <section>
-            <h3>RequireJS: Defining a module</h3>
-            <pre class="code-large"><code contenteditable>define('myModule', ['jquery'], function ($) {
-   return function(selector) {
-    return $(selector);
-  }
-}); </code></pre>
-          </section>
-
-          <section>
-            <h3>RequireJS: Loading a module</h3>
-            <pre class="code-large"><code contenteditable>require(['mymodule'], function(MyModule) {
-
-  MyModule('#myDiv').css('background-color', 'red');
-
-});</code></pre>
-          </section>
-        </section>
-
-        <section>
-          <h3>Nested dependencies</h3>
-          <pre class="code-large"><code>define('myModule', ['jquery'], function($) {
-  return {
-    doSomething: function() {
-      require(['something'], function(Something) {
-        Something.do();
-      });
-    },
-    /* ... */
-  };
-});</code></pre>
-        </section>
-
-        <section>
-          <h3>Circular dependencies</h3>
-          <pre class=""><code>define('Employee', ['exports', 'company'], function(exports, Company) {
-  function Employee(name) {
-    this.name = name;
-    this.company = new Company.Company(name + "'s Company");
-  }
-  exports.Employee = Employee;
-});
-          
-define('Company', ['exports', 'company'], function(exports, Employee) {
-  function Company(name) {
-    this.name = this;
-    this.employees = [];
-  }
-  Company.prototype.addEmployee = function(name) {
-    var employee = new Employee.Employee(name);
-    this.employees.push(employee);
-    employee.company = this;
-  };
-  exports.Company = Company;
-});</code></pre>
-        </section>
-
-        <section>
-          <h3>External templates</h3>
-          <pre class="code-large"><code>define('myModule', [
-    'underscore',
-    'text!myTemplate'
-  ], function(_, myTemplate) {
-
-  // Underscore template
-  return _.template(myTemplate);
-
-});</code></pre>
-        </section>
-
-        <section>
-          <h2>MVC Pattern</h2>
-          <img class="full-image" src="assets/img/mvc.png">
-        </section>
-
-        <section>
-          <h3>MVC</h3>
-          <ul>
-            <li>MVC is the most common structural pattern for the web</li>
-            <li>Many MVC frameworks out there:
-              <ul>
-                <li class="fragment">Ruby On Rails (Ruby)</li>
-                <li class="fragment">Django (Python)</li>
-                <li class="fragment">Spring MVC (Java)</li>
-              </ul>
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Model, View, Controller</h3>
-          <dl>
-            <dt>Model<dt>
-            <dd>Manages data</dd>
-            <dt>View</dt>
-            <dd>Renders the model into a form suitable for interaction (UI)</dd>
-            <dt>Controller</dt>
-            <dd>Receives user inputs and performs actions on model accordingly</dd>
-          </dl>
-        </section>
-
-        <section>
-          <img class="full-image" src="assets/img/mvc.png">
-        </section>
-
-        <section>
-          <h3>MV* Patterns</h3>
-          <ul>
-            <li>Many frameworks are not strict MVC, but a different flavour of it</li>
-            <li class="fragment">MVP: Replaces Controller with Presenter, View is heavy</li>
-            <li class="fragment">MVVM: Replaces Controller with View-Model -- provides data binding between Model and View</li>
-            <li class="fragment">MV* is used to describe these flavours of MVC</li>
-          </ul>
-        </section>
-
-        <section>
-          <h1>Part 2</h1>
-          <h2 class="inverted">
-            <img src="assets/img/backbone.png" alt="Backbone">
-          </h2>
-        </section>
-
-        <section>
-          <h3>Overview of Backbone</h3>
-          <ul>
-            <li>Very lightweight</li>
-            <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
-            <li>Uses MV* pattern</li>
-            <li>Very close to Smalltalk-80's MVC pattern</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>MV* in Backbone</h3>
-          <dl>
-            <dt>Model</dt>
-            <dd>Same as model in MVC</dd>
-            <dt>View</dt>
-            <dd>Similar to Controller in Smalltalk-80's MVC</dd>
-            <dd>Takes in model and renders view</dd>
-            <dd>Handles user interaction with view to update model</dd>
-            <dd>Observes changes on model to update view</dd>
-            <dt>Template<dt>
-            <dd>Same as view in MVC</dd>
-          </dl>
-        </section>
-
-        <section>
-          <h3>Backbone components</h3>
-          <ol>
-            <li>Model</li>
-            <li>Collection</li>
-            <li>View</li>
-            <li>Router</li>
-          </ol>
-        </section>
-
-        <section>
-          <section>
-            <h3>Model</h3>
-            <ul>
-              <li>Extend from Backbone.Model</li>
-              <li>Prototype chain is setup properly for you</li>
-            </ul>
-            <pre class="code-large"><code contenteditable>var Animal = Backbone.Model.extend({
-  says: function() { return '?'; }
-});
-
-var Cat = Animal.extend({
-  says: function() { return 'meow'; }
-});
-
-var cat = new Cat();
-cat instanceof Cat; //--&gt; true
-cat instanceof Animal; //--&gt; true
-cat.says(); //--&gt; "meow"
-
-cat.constructor.__super__.says.call(this); //--&gt; '?'</code></pre>
-          </section>
-
-          <section>
-            <h3>Inheritance in VanillaJS</h3>
-            <pre class="code-large"><code contenteditable>var Animal = function() {};
-Animal.prototype.says = function() { return '?'; };
-
-var Cat = function() {};
-Cat.prototype = new Animal();
-Cat.prototype.constructor = Cat;
-Cat.prototype.constructor.__super__ = Animal.prototype;
-Cat.prototype.says = function() { return 'meow'; };
-
-var cat = new Cat();
-cat instanceof Cat; //--&gt; true
-cat instanceof Animal; //--&gt; true
-cat.says(); //--&gt; "meow"
-
-cat.constructor.__super__.says.call(cat); //--&gt; '?'</code></pre>
-          </section>
-        </section>
-
-        <section>
-          <h3>Collection</h3>
-          <p>A collection is a collection of models</p>
-          <pre class="code-large"><code contenteditable>var MyModel = Backbone.Model.extend({ });
-var MyModelCollection = Backbone.Collection.extend({
-model: MyModel
-});</code></pre>
-        </section>
-
-        <section>
-          <h3>View and template</h3>
-          <ul>
-            <li>View handles user interaction</li>
-            <li>View handles updates to model or collection</li>
-            <li>View updates UI based on changes to model or collection</li>
-            <li>Template renders data as an UI element</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>View</h3>
-          <ul>
-            <li>A view is often associated with a model or collection, but not always</li>
-            <li>Uses templates in its <code>render</code> function to render its UI element</li>
-          </ul>
-          <pre><code contenteditable>var MyView = Backbone.View.extend({
-  // Compiles Underscore template for later use
-  template: _.template('&lt;p&gt;&lt;%= message %&gt;&lt;/p&gt;'),
-
-  render: function() {
-    // Render the Underscore template
-    $(this.el).html( this.template({ message: 'Hello World!'}) );
-    return this;
-  }
-});
-          </code></pre>
-        </section>
-
-        <section>
-          <h3>Template</h3>
-          <p>Backbone does restrict your choices of templates.</p>
-          <p>You can use any templating language you want.</p>
-          <ul class="fragment">
-            <li>Underscore template</li>
-            <li>Mustache</li>
-            <li>Handlebars</li>
-            <li>jQuery template</li>
-            <li>dust.js</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Handlebars</h3>
-          <ul>
-            <li>Extension of the Mustache templating language</li>
-            <li>Supports limited logic in the templates layer</li>
-            <li>Supports user-defined helper functions for generating HTML</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Using templates in Backbone</h3>
-          <p>Templates are used in the views to render data.</p>
-
-          <pre ><code contenteditable>&lt;!-- HTML --&gt;
-&lt;div id="myDiv"&gt;&lt;/div&gt;</code></pre>
-          <pre ><code contenteditable>/* JavaScript */
-var Person = Backbone.Model.extend({});
-
-var PersonView = Backbone.View.extend({
-  template: Handlebars.compile('&lt;p&lt;Hello {{firstName}} {{lastName}}&lt;/p&gt;'),
-  
-  render: function() {
-    $(this.el).html( this.template(this.model.toJSON()) );
-    return this;
-  }
-});
-
-var john = new Person({ firstName: 'John', lastName: 'Smith' });
-var view = new PersonView({ 
-  el: $('#myDiv'),
-  model: john
-});</code></pre>
-        </section>
-
-        <section>
-          <h3>Code reuse using mixins</h3>
-          <p>A mixin defines attributes and functions that can be shared across different classes.</p>
-          <pre class="code-large"><code contenteditable>var Mixins = {};
-
-Mixins.Navigation = {
-  open: function() { /* ... */ },
-  close: function() { /* ... */ },
-  toggle: function() { /* ... */ }
-};
-
-var Menu = Backbone.View.extend({ /* ... */ });
-_.extend(Menu.prototype, Mixins.Navigation);
-
-var menu = new Menu();
-menu.toggle();</code></pre>
-        </section>
-
-        <section>
-          <h1>Part 3</h1>
-          <h2 class="inverted">Let's build an app</h2>
-        </section>
-
-        <section>
-          <section>
-            <h2>UI Mockups</h2>
-          </section>
-
-          <section>
-            <img src="assets/img/tweets_mock_1.png" alt="" class="full-image">
-          </section>
-
-          <section>
-            <img src="assets/img/tweets_mock_2.png" alt="" class="full-image">
-          </section>
-
-          <section>
-            <img src="assets/img/tweets_mock_3.png" alt="" class="full-image">
-          </section>
-
-          <section>
-            <img src="assets/img/tweets_mock_4.png" alt="" class="full-image">
-          </section>
-        </section>
-
-        <section>
-          <h3>The plan</h3>
-          <ul>
-            <li>MV* using Backbone</li>
-            <li>RequireJS for defining &amp; loading modules</li>
-            <li>Handlebars template loaded via RequireJS (text plugin)</li>
-            <li>Data-binding using Synapse</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Let's look at some code!</h2>
-        </section>
-
-        <section>
-          <h2>One last thing</h2>
-        </section>
-
-        <section>
-          <h3>Code testing</h3>
-          <p>Very important! Always test your JavaScript</p>
-          <ul>
-            <li><a href="http://pivotal.github.com/jasmine/">Jasmine</a> &hearts;</li>
-            <li><a href="http://docs.jquery.com/QUnit">QUnit</a></li>
-            <li><a href="http://www.jsunit.net/">JSUnit</a></li>
-          </ul>
-        </section>
-
-        <section>
-          <h3>Moar!</h3>
-          <ul>
-            <li><a href="http://ricostacruz.com/backbone-patterns/">Backbone Patterns</a></li>
-            <li><a href="http://addyosmani.com/resources/essentialjsdesignpatterns/book/">Essential JavaScript Design Patterns</a></li>
-            <li><a href="https://github.com/addyosmani/todomvc">TodoMVC</a></li>
+            <li>Creating great UX</li>
+            <li>Innovating</li>
+            <li>Proper maintenance</li>
           </ul>
         </section>
         
+        <section>
+          <h3>The future</h3>
+          <ul>
+            <li>CoffeeScript</li>
+            <li>AMD</li>
+            <li>Backbone.js</li>
+            <li>100% test coverage</li>
+          </ul>
+        </section>
+        
+        <section>
+          <h3>Agenda</h3>
+          <ul>
+            <li>Brief look at CoffeeScript</li>
+            <li>New file structure and AMD (RequireJS)</li>
+            <li>Writing modules with Backbone.js</li>
+            <li>Testing modules with Jasmine specs</li>
+          </ul>
+        </section>
+
         <section>
           <h1>THE END</h1>
           <p class="inverted">by Jack Hsu/ jaysoo.ca</p>
