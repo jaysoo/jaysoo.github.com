@@ -176,7 +176,7 @@ html {
 #reveal pre {
 	display: block;
 	position: relative;
-	width: 90%;
+	width: 98%;
 	margin: 10px auto;
 
 	text-align: left;
@@ -418,7 +418,7 @@ html {
 
 #reveal .slides {
 	position: absolute;
-	width: 900px;
+	width: 1000px;
 	height: 600px;
 	
 	left: 50%;
