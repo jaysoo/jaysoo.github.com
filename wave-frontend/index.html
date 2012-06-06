@@ -289,9 +289,9 @@ define (require, exports, module) ->
   exports = A
 
 
-# b.coffee
+### b.coffee
 define (require, exports, module) ->
-  A = require('a')
+  A = require('cs!a')
 
   B =
     bar: ->
@@ -320,182 +320,238 @@ define (require, exports, module) ->
           <ul>
             <li>Very lightweight</li>
             <li>Minimal dependencies: Underscore.js and jQuery/Zepto</li>
-            <li>Uses MV* pattern</li>
-            <li>Very close to Smalltalk-80's MVC pattern</li>
+            <li>MV* pattern</li>
           </ul>
         </section>
 
         <section>
           <h3>MV* in Backbone</h3>
-          <dl>
+          <dl style="font-size: 28px; line-height: 1.2">
             <dt>Model</dt>
-            <dd>Same as model in MVC</dd>
+            <dd>In-memory, knows how to fetch and save itself to and from server</dd>
+            <dt>Collection</dt>
+            <dd>A group of instances of a model</dd>
+            <dd>Can be queried and filtered</dd>
             <dt>View</dt>
-            <dd>Similar to Controller in Smalltalk-80's MVC</dd>
-            <dd>Takes in model and renders view</dd>
-            <dd>Handles user interaction with view to update model</dd>
-            <dd>Observes changes on model to update view</dd>
+            <dd>Renders HTML using template</dd>
+            <dd>Handles user interactions to update model and DOM</dd>
+            <dd>Nested views for separation of behaviour</dd>
             <dt>Template<dt>
-            <dd>Same as view in MVC</dd>
+            <dd>Renders HTML from model</dd>
+            <dd>You choose the engine</dd>
           </dl>
         </section>
 
         <section>
-          <h3>Backbone components</h3>
-          <ol>
-            <li>Model</li>
-            <li>Collection</li>
-            <li>View</li>
-            <li>Router</li>
-          </ol>
+          <h3>Models and Collections</h3>
+          <pre class="code-large"><code contenteditable>class Mutant extends Backbone.Model
+
+class Mutants extends Backbone.Collection
+  model: Mutant
+
+xmen = new Mutants()
+
+wolverine = xmen.create(
+  name: 'Wolverine',
+  powers: ['accelerated healding']
+)
+</code></pre>
         </section>
 
         <section>
           <section>
-            <h3>Model</h3>
-            <ul>
-              <li>Extend from Backbone.Model</li>
-              <li>Prototype chain is setup properly for you</li>
-            </ul>
-            <pre class="code-large"><code contenteditable>var Animal = Backbone.Model.extend({
-  says: function() { return '?'; }
-});
+            <h3>View</h3>
+            <pre class="code-large"><code contenteditable>class MutantView extends Backbone.View
+  template: Handlebars.compile('
+    &lt;p class="name"&gt;{{name}}&lt;/p&gt;
+    &lt;ul class="powers"&gt;
+    {{#each powers}}
+      &lt;li&gt;{{this}}&lt;/li&gt;
+    {{/each}}
+    &lt;/ul&gt;
+  ')
 
-var Cat = Animal.extend({
-  says: function() { return 'meow'; }
-});
+  initialize: ->
+    @model.on('all', @render)
 
-var cat = new Cat();
-cat instanceof Cat; //--&gt; true
-cat instanceof Animal; //--&gt; true
-cat.says(); //--&gt; "meow"
-
-cat.constructor.__super__.says.call(this); //--&gt; '?'</code></pre>
+  render: =>
+    @template(@model.toJSON())
+    return @</code></pre>
           </section>
 
           <section>
-            <h3>Inheritance in VanillaJS</h3>
-            <pre class="code-large"><code contenteditable>var Animal = function() {};
-Animal.prototype.says = function() { return '?'; };
+            <h3>Views Cont.</h3>
+            <pre class="code-large"><code contenteditable>class MutantsView extends Backbone.View
+  initialize: ->
+    @collection.on('all' @render)
 
-var Cat = function() {};
-Cat.prototype = new Animal();
-Cat.prototype.constructor = Cat;
-Cat.prototype.constructor.__super__ = Animal.prototype;
-Cat.prototype.says = function() { return 'meow'; };
-
-var cat = new Cat();
-cat instanceof Cat; //--&gt; true
-cat instanceof Animal; //--&gt; true
-cat.says(); //--&gt; "meow"
-
-cat.constructor.__super__.says.call(cat); //--&gt; '?'</code></pre>
+  render: =>
+    that = @
+    @collection.each (model) ->
+      model.render().$el.appendTo(that.el)
+    return @
+</code></pre>
           </section>
         </section>
 
         <section>
-          <h3>Collection</h3>
-          <p>A collection is a collection of models</p>
-          <pre class="code-large"><code contenteditable>var MyModel = Backbone.Model.extend({ });
-var MyModelCollection = Backbone.Collection.extend({
-model: MyModel
-});</code></pre>
+          <h2 class="inverted">Testing</h2>
+          <img src="assets/img/jasmine_logo.png" alt="" style="background:#fff">
         </section>
 
         <section>
-          <h3>View and template</h3>
+          <h3>What?</h3>
           <ul>
-            <li>View handles user interaction</li>
-            <li>View handles updates to model or collection</li>
-            <li>View updates UI based on changes to model or collection</li>
-            <li>Template renders data as an UI element</li>
+            <li>BDD for JavaScript</li>
+            <li>No dependencies</li>
+            <li>Runs on client or server side</li>
           </ul>
         </section>
 
         <section>
-          <h3>View</h3>
+          <h3>How?</h3>
           <ul>
-            <li>A view is often associated with a model or collection, but not always</li>
-            <li>Uses templates in its <code>render</code> function to render its UI element</li>
+            <li>Define suites using <code>describe</code></li>
+            <li>Define specs using <code>it</code></li>
+            <li>Expectations using <strong>matachers</strong></li>
+            <li>setUp and tearDown using <code>beforeEach</code> and <code>afterEach</code></li>
           </ul>
-          <pre><code contenteditable>var MyView = Backbone.View.extend({
-  // Compiles Underscore template for later use
-  template: _.template('&lt;p&gt;&lt;%= message %&gt;&lt;/p&gt;'),
+        </section>
 
-  render: function() {
-    // Render the Underscore template
-    $(this.el).html( this.template({ message: 'Hello World!'}) );
-    return this;
-  }
-});
+        <section>
+          <h3>Jasmine Example</h3>
+          <pre class="code-large"><code contenteditable>describe 'Foo', ->
+
+  beforeEach ->
+    @foo = new Foo()
+
+  afterEach ->
+    @foo.cleanUp()
+
+  it 'should have bar defined', ->
+    expect(@foo.bar).toBeDefined()
           </code></pre>
         </section>
 
         <section>
-          <h3>Template</h3>
-          <p>Backbone does restrict your choices of templates.</p>
-          <p>You can use any templating language you want.</p>
-          <ul class="fragment">
-            <li>Underscore template</li>
-            <li>Mustache</li>
-            <li>Handlebars</li>
-            <li>jQuery template</li>
-            <li>dust.js</li>
-          </ul>
+          <h3>Running specs</h3>
+          <ol>
+            <li>In-browser runner provided by Jasmine</li>
+            <li>Third-party server-side runners</li>
+          </ol>
+        </section>
+
+
+        <section>
+          <h2>Part 2</h2>
+          <h3 class="inverted">Wave Front-End 2.0</h3>
         </section>
 
         <section>
-          <h3>Handlebars</h3>
+          <h3>Structure and organization</h3>
           <ul>
-            <li>Extension of the Mustache templating language</li>
-            <li>Supports limited logic in the templates layer</li>
-            <li>Supports user-defined helper functions for generating HTML</li>
+            <li>Apps live inside their corresponding static folder</li>
+            <li>A <code>main.js</code> and corresponding <code>csmain.coffee</code> entry point for the app</li>
+            <li>Models, collections, templates, views inside their own folders</li>
+          </ul>
+          <pre class="code-large"><code contenteditable>waveaccounting/
+  foo/
+    static/
+      js/
+        app/
+          collections/
+          models/
+          templates/
+          views/
+          main.js
+          csmain.coffee</code></pre>
+        </section>
+
+        <section>
+          <section>
+            <h3>Main files</h3>
+            <ul>
+              <li><code>main.js</code> is the entry point for the app</li>
+              <li>It loads <code>csmain.coffee</code>, which is the actual app code</li>
+              <li>CS files are not valid once we optimize, thus JS main is needed</li>
+            </ul>
+            </section>
+            <section>
+            <h3>Example</h3>
+            <pre class="code-large"><code contenteditable>define(['cs!products/csmain'], function (CsMain) {
+  return CsMain;
+});
+  </code></pre>
+            <pre class="code-large"><code contenteditable>define (require, exports, module) ->
+    Core = require('cs!core/main')
+    $ = Core.Facade.$
+
+    App =
+      init: ->
+        # ...
+
+    exports = App
+  </code></pre>
+          </section>
+        </section>
+
+        <section>
+        <section>
+          <h2>Patterns</h2>
+          <p>Two patterns introduced in new front-end</p>
+          <ul>
+            <li>Facade</li>
+            <li>Mixins</li>
           </ul>
         </section>
 
         <section>
-          <h3>Using templates in Backbone</h3>
-          <p>Templates are used in the views to render data.</p>
-
-          <pre ><code contenteditable>&lt;!-- HTML --&gt;
-&lt;div id="myDiv"&gt;&lt;/div&gt;</code></pre>
-          <pre ><code contenteditable>/* JavaScript */
-var Person = Backbone.Model.extend({});
-
-var PersonView = Backbone.View.extend({
-  template: Handlebars.compile('&lt;p&lt;Hello {{firstName}} {{lastName}}&lt;/p&gt;'),
-  
-  render: function() {
-    $(this.el).html( this.template(this.model.toJSON()) );
-    return this;
-  }
-});
-
-var john = new Person({ firstName: 'John', lastName: 'Smith' });
-var view = new PersonView({ 
-  el: $('#myDiv'),
-  model: john
-});</code></pre>
+          <h3>Facade</h3>
+          <ul style="margin-bottom:40px">
+            <li>Define interfaces used throughout the application</li>
+            <li>Implementation can be changed later</li>
+          </ul>
+          <p>Example: <code>$</code> for jQuery can be switched with Zepto with polyfills for missing features</p>
+          <pre class="code-large"><code contenteditable>$ = Facade.$</code></pre>
         </section>
 
         <section>
-          <h3>Code reuse using mixins</h3>
-          <p>A mixin defines attributes and functions that can be shared across different classes.</p>
-          <pre class="code-large"><code contenteditable>var Mixins = {};
+          <h3>Mixins</h3>
+          <p>Reusable objects with attributes that can be shared among different classes</p>
+          <pre class="code-large"><code contenteditable>Mixins = {}
 
-Mixins.Navigation = {
-  open: function() { /* ... */ },
-  close: function() { /* ... */ },
-  toggle: function() { /* ... */ }
-};
+Mixins.Navigation =
+  open: -> # ...
+  close: -> # ...
+  toggle: -> # ...
 
-var Menu = Backbone.View.extend({ /* ... */ });
-_.extend(Menu.prototype, Mixins.Navigation);
+# ...
 
-var menu = new Menu();
-menu.toggle();</code></pre>
+class Menu extends Backbone.View
+  @include Mixins.Navigation</code></pre>
+        </section>
         </section>
 
+        <section>
+          <h3>Optimization</h3>
+          <p>Use r.js to combine and uglify modules</p>
+          <pre class="code-large"><code contenteditable>$ python waveaccounting/manage.py collectstatic --noinput
+$ ./tools/js/build.sh
+</code></pre>
+<p style="font-size: 28px">Note: This is not required for development mode</p>
+        </section>
+
+        <section>
+          <h3>Testing - Spec runners</h3>
+          <ol>
+            <li>In-browser runner at <code>/jstest/</code> (Set <code>DEBUG = True</code>)</li>
+            <li>Use the Node.js runner (<code>tools/js/specrunner.coffee</code>)
+          </ol>
+        </section>
+
+        <section>
+          <h2>Let's look at some code...</h2>
+        </section>
 
         <section>
           <h1>THE END</h1>
